@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>地域マップ | 若松町町内会ポータル</title>
+    <meta name="description" content="地域施設の位置を確認できる地図ページです。Google My Maps埋込対応。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="map">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo"><span>🌲</span> 若松町内会</div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="section-stack">
+            <section class="page-title card">
+                <h1>地域マップ</h1>
+                <p>添付画像マップ（素材/若松町ない「お散歩マップ」.png）を優先表示し、未配置時は Google My Maps を表示します。</p>
+            </section>
+
+            <section class="card">
+                <div id="map-embed"></div>
+            </section>
+
+            <section class="card">
+                <h2>主な表示地点</h2>
+                <div class="filter-bar compact">
+                    <label class="filter-field">
+                        <span>カテゴリ選択</span>
+                        <select id="map-category-filter">
+                            <option value="all">すべて</option>
+                        </select>
+                    </label>
+                    <label class="filter-field search-field">
+                        <span>地点検索</span>
+                        <input id="map-search" type="search" placeholder="例: AED、集会所">
+                    </label>
+                </div>
+                <div id="map-spots"></div>
+                <p id="map-empty" class="note hidden">条件に一致する地点がありません。</p>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 若松町町内会ポータルサイト</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>備品予約 | 若松町町内会ポータル</title>
+    <meta name="description" content="町内会備品の予約ページです。テント、長机、椅子、発電機、草刈機の予約フォームへ進めます。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="equipment">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo"><span>🌲</span> 若松町内会</div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="section-stack">
+            <section class="page-title card">
+                <h1>備品予約</h1>
+                <p>備品を選択して空き状況を確認し、空き日程を選んで予約情報を入力できます。</p>
+                <div class="button-row">
+                    <a id="equipment-master-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">備品マスターSheet</a>
+                    <a id="equipment-reservation-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">予約台帳Sheet</a>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>1. 備品選択と検索</h2>
+                <div class="filter-bar">
+                    <label class="filter-field">
+                        <span>備品ドロップダウン</span>
+                        <select id="equipment-select"></select>
+                    </label>
+                    <label class="filter-field search-field">
+                        <span>備品あいまい検索</span>
+                        <input id="equipment-search" type="search" placeholder="例: てんと / 発電 / 机">
+                    </label>
+                </div>
+                <p id="equipment-selected-note" class="note">表示中: -</p>
+            </section>
+
+            <section class="card">
+                <h2>2. カレンダー表示（ガント風）</h2>
+                <p class="note">緑: 空き / 赤: 貸出中。空きセルをタップして貸出日と返納日を選択します。</p>
+                <div class="timeline-toolbar">
+                    <label class="filter-field">
+                        <span>表示開始日</span>
+                        <input id="timeline-start-date" type="date">
+                    </label>
+                    <button id="timeline-reset" class="button" type="button">今日から表示</button>
+                </div>
+                <div id="equipment-gantt" class="equipment-gantt" aria-live="polite"></div>
+                <p id="gantt-selection-note" class="note">まず空きセルを1つ選択してください。</p>
+            </section>
+
+            <section class="card">
+                <h2>3. 予約入力フォーム</h2>
+                <form id="equipment-reservation-form" class="inline-form">
+                    <label>氏名
+                        <input id="reserve-name" name="name" type="text" required>
+                    </label>
+                    <label>電話番号
+                        <input id="reserve-phone" name="phone" type="tel" required>
+                    </label>
+                    <label>組・班
+                        <input id="reserve-group" name="group" type="text" placeholder="例: 2組3班" required>
+                    </label>
+                    <label>備品
+                        <input id="reserve-equipment" name="equipment" type="text" readonly>
+                    </label>
+                    <label>数量
+                        <input id="reserve-quantity" name="quantity" type="number" min="1" value="1" required>
+                    </label>
+                    <label>貸出日
+                        <input id="reserve-loan-date" name="loanDate" type="date" required>
+                    </label>
+                    <label>返納日
+                        <input id="reserve-return-date" name="returnDate" type="date" required>
+                    </label>
+                    <button id="add-reservation-item" class="button" type="button">この備品を予約リストへ追加</button>
+                    <div class="card sub-card">
+                        <h3>予約リスト（複数備品対応）</h3>
+                        <ul id="reservation-items" class="simple-list"></ul>
+                        <p id="reservation-items-empty" class="note">まだ備品が追加されていません。</p>
+                    </div>
+                    <button class="button" type="submit">予約を登録</button>
+                    <p id="reservation-status" class="note" aria-live="polite"></p>
+                </form>
+                <p class="note">登録後の返納期限は管理ページに自動表示されます（ローカル保存）。</p>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 若松町町内会ポータルサイト</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

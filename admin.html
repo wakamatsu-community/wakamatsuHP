@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>管理ページ | 若松町町内会ポータル</title>
+    <meta name="description" content="将来拡張用の町内会管理ダッシュボード。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="admin">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo"><span>🌲</span> 若松町内会</div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="section-stack">
+            <section class="card admin-login-section">
+                <h1>管理者ログイン（予定）</h1>
+                <p>将来的に Google アカウントによるログイン認証に対応します。現在は準備中です。</p>
+                <button class="button" id="google-signin-btn" type="button" disabled>
+                    Googleでログイン（準備中）
+                </button>
+                <p id="login-status" class="note" aria-live="polite">
+                    ログイン機能は未実装です。config.js の <code>integrations.googleLoginReady</code> を <code>true</code> に変更すると有効化されます。
+                </p>
+            </section>
+
+            <section class="admin-grid">
+                <article class="card">
+                    <h2>回覧板登録</h2>
+                    <p>PDFアップロード、公開日、カテゴリ設定</p>
+                    <button class="button" type="button" disabled>準備中</button>
+                </article>
+                <article class="card">
+                    <h2>PDF登録</h2>
+                    <p>会則・議事録・資料をカテゴリ別に管理</p>
+                    <button class="button" type="button" disabled>準備中</button>
+                </article>
+                <article class="card">
+                    <h2>イベント登録</h2>
+                    <p>定例行事・追加イベントの登録と募集フォーム設定</p>
+                    <a class="button-link" href="#admin-events-section">登録する</a>
+                </article>
+                <article class="card">
+                    <h2>備品予約確認</h2>
+                    <p>返納期限アラートと予約一覧を確認できます。</p>
+                    <a class="button-link" href="#admin-equipment-section">確認する</a>
+                </article>
+            </section>
+
+            <section id="admin-events-section" class="card">
+                <h2>行事管理（定例・追加イベント）</h2>
+                <div class="button-row">
+                    <a id="admin-events-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">イベント管理Sheet</a>
+                    <a id="admin-event-categories-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">カテゴリ管理Sheet</a>
+                </div>
+
+                <form id="admin-event-category-form" class="inline-form card sub-card">
+                    <h3>行事カテゴリ管理</h3>
+                    <label>カテゴリ名
+                        <input name="categoryName" type="text" placeholder="例: 清掃 / 会議 / ミニ集会 / セミナー" required>
+                    </label>
+                    <button class="button" type="submit">カテゴリを登録</button>
+                    <p id="admin-event-category-status" class="note" aria-live="polite"></p>
+                </form>
+
+                <div class="admin-form-grid">
+                    <form id="admin-recurring-event-form" class="inline-form card sub-card">
+                        <h3>定例行事を登録</h3>
+                        <label>行事名
+                            <input name="title" type="text" required>
+                        </label>
+                        <label>カテゴリ
+                            <input name="category" type="text" placeholder="清掃 / 会議 など" required>
+                        </label>
+                        <label>定例スケジュール
+                            <input name="scheduleLabel" type="text" placeholder="毎月第1日曜 8:00" required>
+                        </label>
+                        <label>場所
+                            <input name="place" type="text" required>
+                        </label>
+                        <label>募集フォームURL
+                            <input name="recruitFormUrl" type="url" placeholder="https://forms.gle/..." required>
+                        </label>
+                        <label>説明
+                            <textarea name="description"></textarea>
+                        </label>
+                        <button class="button" type="submit">定例行事を登録</button>
+                        <p id="admin-recurring-event-status" class="note" aria-live="polite"></p>
+                    </form>
+
+                    <form id="admin-special-event-form" class="inline-form card sub-card">
+                        <h3>追加イベントを登録</h3>
+                        <label>イベント名
+                            <input name="title" type="text" required>
+                        </label>
+                        <label>カテゴリ
+                            <input name="category" type="text" placeholder="ミニ集会 / セミナー など" required>
+                        </label>
+                        <label>開催日時
+                            <input name="scheduleLabel" type="text" placeholder="2026-08-20 19:00" required>
+                        </label>
+                        <label>場所
+                            <input name="place" type="text" required>
+                        </label>
+                        <label>参加者募集フォームURL
+                            <input name="recruitFormUrl" type="url" placeholder="https://forms.gle/..." required>
+                        </label>
+                        <label>説明
+                            <textarea name="description"></textarea>
+                        </label>
+                        <button class="button" type="submit">追加イベントを登録</button>
+                        <p id="admin-special-event-status" class="note" aria-live="polite"></p>
+                    </form>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>個人情報台帳入力</h2>
+                <div class="button-row">
+                    <a id="admin-people-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">個人情報Sheet</a>
+                </div>
+                <form id="admin-people-form" class="inline-form">
+                    <label>氏名
+                        <input name="name" type="text" required>
+                    </label>
+                    <label>電話番号
+                        <input name="phone" type="tel" required>
+                    </label>
+                    <label>組・班
+                        <input name="group" type="text" required>
+                    </label>
+                    <label>メモ
+                        <textarea name="memo"></textarea>
+                    </label>
+                    <button class="button" type="submit">個人情報を登録</button>
+                    <p id="admin-people-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>備品台帳入力</h2>
+                <div class="button-row">
+                    <a id="admin-equipment-ledger-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">備品台帳Sheet</a>
+                </div>
+                <form id="admin-equipment-ledger-form" class="inline-form">
+                    <label>備品名
+                        <input name="equipmentName" type="text" required>
+                    </label>
+                    <label>在庫数
+                        <input name="stock" type="number" min="0" required>
+                    </label>
+                    <label>保管場所
+                        <input name="location" type="text" required>
+                    </label>
+                    <label>メモ
+                        <textarea name="memo"></textarea>
+                    </label>
+                    <button class="button" type="submit">備品台帳を登録</button>
+                    <p id="admin-equipment-ledger-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section id="admin-equipment-section" class="card">
+                <h2>返納期限アラート</h2>
+                <div class="button-row">
+                    <a id="admin-master-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">備品マスターSheet</a>
+                    <a id="admin-reservation-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">予約台帳Sheet</a>
+                </div>
+                <div id="admin-return-alerts" class="admin-alerts"></div>
+            </section>
+
+            <section class="card">
+                <h2>備品予約一覧</h2>
+                <div class="table-scroll">
+                    <table class="table-like">
+                        <thead>
+                            <tr><th>備品</th><th>数量</th><th>貸出日</th><th>返納日</th></tr>
+                        </thead>
+                        <tbody id="admin-reservation-table-body"></tbody>
+                    </table>
+                </div>
+                <p class="note">個人情報保護のため、管理画面では氏名・電話番号などは表示しません。</p>
+            </section>
+
+            <section class="card">
+                <h2>回覧板・資料アップロード（Google Drive）</h2>
+                <div class="button-row">
+                    <a id="admin-circular-drive-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">回覧板フォルダ</a>
+                    <a id="admin-docs-drive-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">資料フォルダ</a>
+                </div>
+                <form id="admin-drive-doc-upload-form" class="inline-form">
+                    <label>保存先
+                        <select id="admin-drive-doc-destination" name="destination" required>
+                            <option value="circular">回覧板</option>
+                            <option value="documents">その他資料</option>
+                        </select>
+                    </label>
+                    <label>カテゴリ
+                        <input name="category" type="text" placeholder="例: 回覧板 / 会則 / 議事録" required>
+                    </label>
+                    <label>タイトル
+                        <input name="title" type="text" required>
+                    </label>
+                    <label>PDFファイル
+                        <input name="files" type="file" accept="application/pdf" multiple required>
+                    </label>
+                    <button class="button" type="submit">Driveへ保存</button>
+                    <p id="admin-drive-doc-upload-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>将来拡張予定</h2>
+                <table class="table-like">
+                    <thead>
+                        <tr><th>機能</th><th>状態</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>LINE通知</td><td>設計予定</td></tr>
+                        <tr><td>Google Drive API</td><td>接続設計対応済み</td></tr>
+                        <tr><td>Google Calendar API</td><td>接続設計対応済み</td></tr>
+                        <tr><td>Google Forms API</td><td>接続設計対応済み</td></tr>
+                        <tr><td>会員管理</td><td>未着手</td></tr>
+                        <tr><td>AIチャットボット</td><td>未着手</td></tr>
+                        <tr><td>防災通知システム</td><td>未着手</td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 若松町町内会ポータルサイト</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

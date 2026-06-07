@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>防災情報 | 若松町町内会ポータル</title>
+    <meta name="description" content="避難場所一覧、防災マニュアル、災害時連絡方法、備蓄品リストを掲載。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="disaster">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo"><span>🌲</span> 若松町内会</div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="section-stack">
+            <section class="page-title card">
+                <h1>防災情報</h1>
+                <p>災害時に必要な情報をまとめています。更新情報は町内会から回覧板でも通知します。</p>
+            </section>
+
+            <section class="card-grid">
+                <article class="card">
+                    <h2>避難場所一覧</h2>
+                    <ul class="simple-list" id="shelter-list">
+                        <li>東小学校 </li>                        
+                    </ul>
+                </article>
+                <article class="card">
+                    <h2>防災マニュアルPDF</h2>
+                    <p>Google Drive上の最新マニュアルを参照してください。</p>
+                    <a id="disaster-manual-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">マニュアルを開く</a>
+                </article>
+            </section>
+
+            <section class="card-grid">
+                <article class="card">
+                    <h2>災害時の連絡方法</h2>
+                    <ol>
+                        <li>班長への電話連絡</li>
+                        <li>安否確認フォーム入力</li>
+                        <li>掲示板の緊急掲示確認</li>
+                    </ol>
+                </article>
+                <article class="card">
+                    <h2>備蓄品リスト</h2>
+                    <ul class="simple-list">
+                        <li>飲料水（3日分）</li>
+                        <li>非常食（3日分）</li>
+                        <li>簡易トイレ・衛生用品</li>
+                        <li>モバイルバッテリー</li>
+                        <li>常備薬・救急セット</li>
+                    </ul>
+                </article>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 若松町町内会ポータルサイト</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

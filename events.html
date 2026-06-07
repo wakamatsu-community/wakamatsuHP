@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>行事予定 | 若松町町内会ポータル</title>
+    <meta name="description" content="町内会行事、清掃活動、防災訓練、夏祭り、学びの会の予定を確認できます。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="events">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo"><span>🌲</span> 若松町内会</div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="section-stack">
+            <section class="page-title card">
+                <h1>イベントカレンダー</h1>
+                <p>Google Calendar を標準カレンダーとして表示しています。町内会行事、清掃活動、防災訓練、夏祭り、学びの会の予定を確認できます。</p>
+            </section>
+
+            <section class="card">
+                <div id="calendar-main"></div>
+            </section>
+
+            <section class="card">
+                <h2>カテゴリ別カレンダー</h2>
+                <p class="note">各項目の Google Calendar URL は js/config.js の <code>calendar.embeds</code> で管理しています。</p>
+                <div class="filter-bar">
+                    <label class="filter-field">
+                        <span>カテゴリ選択</span>
+                        <select id="event-category-filter">
+                            <option value="all">すべて表示</option>
+                        </select>
+                    </label>
+                    <label class="filter-field search-field">
+                        <span>キーワード検索</span>
+                        <input id="event-search" type="search" placeholder="例: 防災、清掃、夏祭り">
+                    </label>
+                </div>
+                <div id="calendar-grid" class="section-stack"></div>
+                <p id="event-empty" class="note hidden">条件に一致するカレンダーがありません。</p>
+            </section>
+
+            <section class="card">
+                <h2>管理者登録イベント</h2>
+                <div class="filter-bar">
+                    <label class="filter-field">
+                        <span>種別</span>
+                        <select id="managed-event-type-filter">
+                            <option value="all">すべて</option>
+                            <option value="recurring">定例行事</option>
+                            <option value="special">追加イベント</option>
+                        </select>
+                    </label>
+                    <label class="filter-field">
+                        <span>カテゴリ</span>
+                        <select id="managed-event-category-filter">
+                            <option value="all">すべて</option>
+                        </select>
+                    </label>
+                    <label class="filter-field search-field">
+                        <span>検索</span>
+                        <input id="managed-event-search" type="search" placeholder="行事名・カテゴリ・場所で検索">
+                    </label>
+                </div>
+                <div id="managed-events-list" class="section-stack"></div>
+                <p id="managed-events-empty" class="note hidden">条件に一致するイベントがありません。</p>
+            </section>
+
+            <section class="card">
+                <h2>参加者募集フォーム</h2>
+                <p class="note">カレンダー掲載イベントへの参加希望を記録します。</p>
+                <form id="event-recruit-form" class="inline-form">
+                    <label>対象イベント
+                        <select id="recruit-event-id" name="eventId" required></select>
+                    </label>
+                    <label>氏名
+                        <input name="name" type="text" required>
+                    </label>
+                    <label>電話番号
+                        <input name="phone" type="tel" required>
+                    </label>
+                    <label>組・班
+                        <input name="group" type="text" required>
+                    </label>
+                    <label>参加人数
+                        <input name="count" type="number" min="1" value="1" required>
+                    </label>
+                    <button class="button" type="submit">参加希望を送信</button>
+                    <p id="event-recruit-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>参加結果記録</h2>
+                <p class="note">実際に参加したメンバーの結果を記録します。</p>
+                <form id="event-attendance-form" class="inline-form">
+                    <label>対象イベント
+                        <select id="attendance-event-id" name="eventId" required></select>
+                    </label>
+                    <label>メンバー名
+                        <input name="memberName" type="text" required>
+                    </label>
+                    <label>参加結果
+                        <select name="result" required>
+                            <option value="参加">参加</option>
+                            <option value="欠席">欠席</option>
+                            <option value="途中参加">途中参加</option>
+                        </select>
+                    </label>
+                    <label>メモ
+                        <textarea name="memo" placeholder="役割や連絡事項"></textarea>
+                    </label>
+                    <button class="button" type="submit">参加結果を記録</button>
+                    <p id="event-attendance-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 若松町町内会ポータルサイト</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>写真アルバム | 若松町町内会ポータル</title>
+    <meta name="description" content="夏祭り・防災訓練・清掃活動などの写真アルバムです。Google Drive連携対応。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="gallery">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo"><span>🌲</span> 若松町内会</div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="section-stack">
+            <section class="page-title card">
+                <h1>写真アルバム</h1>
+                <p>町内会の行事写真を公開しています。Google Drive フォルダとの連携を想定した構成です。</p>
+            </section>
+
+            <section class="card">
+                <h2>写真投稿（ユーザー投稿）</h2>
+                <p class="note">保存先フォルダを選択するか、新規フォルダを作成してから投稿できます。</p>
+                <form id="gallery-upload-form" class="inline-form">
+                    <label>投稿者名
+                        <input name="uploaderName" type="text" required>
+                    </label>
+                    <label>保存先の系統
+                        <select id="gallery-destination" name="destination" required>
+                            <option value="">選択してください</option>
+                            <option value="new">新規フォルダを作成</option>
+                        </select>
+                    </label>
+                    <label id="new-folder-wrap" class="hidden">新規フォルダ名
+                        <input id="new-folder-name" name="newFolderName" type="text" placeholder="例: 2026_秋のミニ集会">
+                    </label>
+                    <label>写真ファイル
+                        <input name="photos" type="file" accept="image/*" multiple required>
+                    </label>
+                    <label>コメント
+                        <textarea name="comment" placeholder="写真説明や撮影日など"></textarea>
+                    </label>
+                    <button class="button" type="submit">Google Driveへ投稿</button>
+                    <p id="gallery-upload-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>アルバム検索</h2>
+                <div class="filter-bar">
+                    <label class="filter-field">
+                        <span>アルバム選択</span>
+                        <select id="gallery-album-filter">
+                            <option value="all">すべてのアルバム</option>
+                        </select>
+                    </label>
+                    <label class="filter-field search-field">
+                        <span>キーワード検索</span>
+                        <input id="gallery-search" type="search" placeholder="行事名や写真タイトルを検索">
+                    </label>
+                </div>
+            </section>
+            <div id="gallery-root" class="card-grid"></div>
+            <p id="gallery-empty" class="note hidden">条件に一致するアルバムがありません。</p>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 若松町町内会ポータルサイト</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

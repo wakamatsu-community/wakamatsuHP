@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>若松町内会ポータル | みんなでつくる安心のまち</title>
+    <meta name="description" content="若松町内会ポータルサイト。最新のお知らせ、ゴミ収集案内、防災情報、イベント、地域マップ、回覧板へアクセスできます。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="home">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo">
+                <span>🌲</span> 若松町内会
+            </div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero card">
+                <div class="hero-body">
+                    <p class="eyebrow">WAKAMATSU COMMUNITY PORTAL</p>
+                    <h1>若松町町内会ポータルサイト</h1>
+                    <p>暮らしに必要な情報を一つにまとめた、町内会の公式ポータルです。</p>
+                </div>
+                <div class="hero-image-wrap">
+                    <img src="images/hero-town.svg" alt="若松町の街並みイメージ" class="hero-image">
+                </div>
+            </section>
+
+            <section class="card-grid">
+                <article class="card">
+                    <h2>📢 最新のお知らせ</h2>
+                    <ul class="news-list">
+                        <li><strong>6/15:</strong> 町内一斉清掃を実施します</li>
+                        <li><strong>6/08:</strong> 夏祭りボランティア募集を開始しました</li>
+                        <li><strong>6/01:</strong> 回覧板6月号を掲載しました</li>
+                    </ul>
+                </article>
+                <article class="card emergency-card">
+                    <h2>🚨 緊急情報</h2>
+                    <p id="emergency-text">現在、緊急のお知らせはありません。</p>
+                    <a class="button-link danger" href="disaster.html">防災ページへ</a>
+                </article>
+            </section>
+
+            <section class="card-grid quick-links">
+                <a class="card portal-link" href="events.html">
+                    <h3>🎉 イベント情報</h3>
+                    <p>町内会行事、清掃活動、防災訓練などの予定を確認できます。</p>
+                </a>
+                <a class="card portal-link" href="documents.html">
+                    <h3>📚 回覧板・資料室</h3>
+                    <p>回覧板、議事録、会則などのPDF資料を一覧できます。</p>
+                </a>
+                <a class="card portal-link" href="map.html">
+                    <h3>🗺️ 地域マップ</h3>
+                    <p>集会所、避難所、AED、防災倉庫などの位置情報を確認できます。</p>
+                </a>
+                <a class="card portal-link" href="disaster.html">
+                    <h3>⛑️ 防災情報</h3>
+                    <p>避難場所一覧、防災マニュアル、災害時連絡手順を掲載しています。</p>
+                </a>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 若松町町内会ポータルサイト</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
