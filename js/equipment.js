@@ -22,6 +22,13 @@ function addDays(date, days) {
     return d;
 }
 
+function getWeekStart(baseDate) {
+    const d = new Date(baseDate);
+    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    start.setDate(start.getDate() - start.getDay());
+    return start;
+}
+
 function inRange(target, start, end) {
     const t = normalize(target);
     return t >= normalize(start) && t <= normalize(end);
@@ -240,11 +247,6 @@ export async function initEquipmentPage(config) {
         return;
     }
 
-    applySheetLinks(config, {
-        master: "equipment-master-sheet-link",
-        reservation: "equipment-reservation-sheet-link"
-    });
-
     const indexedItems = buildSearchIndex(await loadEquipmentItems(config));
 
     let filteredItems = indexedItems;
@@ -316,66 +318,72 @@ export async function initEquipmentPage(config) {
             return;
         }
 
-        const dateCount = Number(config?.equipment?.timelineDays || 14);
-        const dates = Array.from({ length: dateCount }, (_, i) => formatDate(addDays(rangeStart, i)));
+        const rangeStartWeek = getWeekStart(rangeStart);
+        const dates = Array.from({ length: 28 }, (_, i) => formatDate(addDays(rangeStartWeek, i)));
 
         const header = document.createElement("div");
         header.className = "gantt-header";
-        header.innerHTML = "<span>日付</span>";
-
-        dates.forEach((date) => {
+        header.innerHTML = "<span>週/曜日</span>";
+        ["日", "月", "火", "水", "木", "金", "土"].forEach((day) => {
             const label = document.createElement("span");
-            label.textContent = date.slice(5).replace("-", "/");
+            label.textContent = day;
             header.appendChild(label);
         });
-
-        const row = document.createElement("div");
-        row.className = "gantt-row";
-
-        const nameCell = document.createElement("span");
-        nameCell.className = "gantt-equipment-name";
-        nameCell.textContent = selectedItem.label;
-        row.appendChild(nameCell);
 
         const effectiveItems = [...reservationItems, ...pendingItems.map((item) => ({ ...item, recordId: "TEMP" }))];
         const stock = Number(selectedItem.stock || 1);
 
-        dates.forEach((date) => {
-            const used = getUsedQuantity(effectiveItems, selectedItem.id, date);
-            const cell = createGanttCell(date, used, stock);
-            cell.addEventListener("click", () => {
-                const remaining = Number(cell.dataset.remaining || "0");
-                if (remaining <= 0) {
-                    selectionNote.textContent = "貸出中の日付は選択できません。";
-                    return;
-                }
+        const rows = [];
+        for (let week = 0; week < 4; week += 1) {
+            const row = document.createElement("div");
+            row.className = "gantt-row";
 
-                if (!tapStartDate || date < tapStartDate) {
-                    tapStartDate = date;
-                    formLoanDate.value = date;
-                    formReturnDate.value = date;
-                    formQuantity.max = String(remaining);
-                    formQuantity.value = "1";
-                    selectionNote.textContent = `開始日を ${date} に設定しました。`;
-                } else {
-                    formLoanDate.value = tapStartDate;
-                    formReturnDate.value = date;
-                    const minRemaining = getMinRemainingOnRange(
-                        effectiveItems,
-                        selectedItem.id,
-                        stock,
-                        new Date(tapStartDate),
-                        new Date(date)
-                    );
-                    formQuantity.max = String(Math.max(1, minRemaining));
-                    formQuantity.value = String(Math.min(Number(formQuantity.value || 1), Math.max(1, minRemaining)));
-                    selectionNote.textContent = `利用期間を ${tapStartDate} 〜 ${date} に設定しました。`;
-                }
+            const weekStartDate = dates[week * 7];
+            const weekEndDate = dates[week * 7 + 6];
+            const nameCell = document.createElement("span");
+            nameCell.className = "gantt-equipment-name";
+            nameCell.textContent = `${Number(weekStartDate.slice(5, 7))}/${Number(weekStartDate.slice(8, 10))}〜${Number(weekEndDate.slice(5, 7))}/${Number(weekEndDate.slice(8, 10))}`;
+            row.appendChild(nameCell);
+
+            dates.slice(week * 7, week * 7 + 7).forEach((date) => {
+                const used = getUsedQuantity(effectiveItems, selectedItem.id, date);
+                const cell = createGanttCell(date, used, stock);
+                cell.addEventListener("click", () => {
+                    const remaining = Number(cell.dataset.remaining || "0");
+                    if (remaining <= 0) {
+                        selectionNote.textContent = "貸出中の日付は選択できません。";
+                        return;
+                    }
+
+                    if (!tapStartDate || date < tapStartDate) {
+                        tapStartDate = date;
+                        formLoanDate.value = date;
+                        formReturnDate.value = date;
+                        formQuantity.max = String(remaining);
+                        formQuantity.value = "1";
+                        selectionNote.textContent = `開始日を ${date} に設定しました。`;
+                    } else {
+                        formLoanDate.value = tapStartDate;
+                        formReturnDate.value = date;
+                        const minRemaining = getMinRemainingOnRange(
+                            effectiveItems,
+                            selectedItem.id,
+                            stock,
+                            new Date(tapStartDate),
+                            new Date(date)
+                        );
+                        formQuantity.max = String(Math.max(1, minRemaining));
+                        formQuantity.value = String(Math.min(Number(formQuantity.value || 1), Math.max(1, minRemaining)));
+                        selectionNote.textContent = `利用期間を ${tapStartDate} 〜 ${date} に設定しました。`;
+                    }
+                });
+                row.appendChild(cell);
             });
-            row.appendChild(cell);
-        });
 
-        ganttRoot.append(header, row);
+            rows.push(row);
+        }
+
+        ganttRoot.append(header, ...rows);
         selectedNote.textContent = `表示中: ${selectedItem.label}`;
         formEquipment.value = selectedItem.label;
     }
@@ -464,8 +472,9 @@ export async function initEquipmentPage(config) {
         renderGantt();
     });
     timelineReset.addEventListener("click", () => {
-        rangeStart = new Date();
-        timelineStartInput.value = formatDate(rangeStart);
+        const currentWeekStart = getWeekStart(new Date());
+        rangeStart = currentWeekStart;
+        timelineStartInput.value = formatDate(currentWeekStart);
         tapStartDate = "";
         renderGantt();
     });

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="イベント情報アイコン">
+  <rect width="160" height="160" rx="22" fill="#FFF5E8"/>
+  <g transform="translate(20 24)">
+    <rect x="8" y="28" width="104" height="72" rx="10" fill="#FFFFFF" stroke="#DAB892" stroke-width="4"/>
+    <rect x="8" y="28" width="104" height="20" rx="10" fill="#FAD6AF"/>
+    <circle cx="28" cy="22" r="6" fill="#C47A4B"/>
+    <circle cx="92" cy="22" r="6" fill="#C47A4B"/>
+    <line x1="28" y1="12" x2="28" y2="30" stroke="#C47A4B" stroke-width="4" stroke-linecap="round"/>
+    <line x1="92" y1="12" x2="92" y2="30" stroke="#C47A4B" stroke-width="4" stroke-linecap="round"/>
+    <line x1="24" y1="60" x2="96" y2="60" stroke="#EEDACA" stroke-width="3"/>
+    <line x1="24" y1="74" x2="76" y2="74" stroke="#EEDACA" stroke-width="3"/>
+  </g>
+  <g>
+    <circle cx="28" cy="44" r="11" fill="#FFD78A" stroke="#E8A65B" stroke-width="3"/>
+    <circle cx="132" cy="42" r="10" fill="#BEE0FF" stroke="#7FA7CE" stroke-width="3"/>
+    <path d="M28 31v-9M132 30v-8" stroke="#C98D57" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

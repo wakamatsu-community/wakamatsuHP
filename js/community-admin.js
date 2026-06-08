@@ -115,6 +115,10 @@ async function loadManagedEvents(config) {
     return parsed.length > 0 ? parsed : loadLocalEvents(config);
 }
 
+export async function loadAllManagedEvents(config) {
+    return loadManagedEvents(config);
+}
+
 async function loadEventCategories(config, events) {
     const rows = await fetchSheetRows(config?.calendar?.management?.categoriesSheetUrl);
     if (rows && rows.length > 0) {
@@ -162,9 +166,40 @@ function createManagedEventCard(event) {
     return card;
 }
 
+function isLearningEvent(event) {
+    const text = `${event?.category || ""} ${event?.title || ""}`.toLowerCase();
+    return text.includes("学び") || text.includes("コミニティ") || text.includes("コミュニティ");
+}
+
+function getLearningCategories(events) {
+    return Array.from(new Set(events.map((event) => event.category).filter(Boolean)));
+}
+
+function createLearningEventCard(event) {
+    const card = document.createElement("article");
+    card.className = "card managed-event-card learning-event-card";
+    card.dataset.type = event.type;
+    card.dataset.category = event.category || "";
+    card.dataset.search = `${event.title} ${event.category} ${event.place} ${event.description}`.toLowerCase();
+    card.dataset.eventId = event.id;
+
+    const typeLabel = event.type === "recurring" ? "定例開催" : "単発開催";
+
+    card.innerHTML = `
+        <p class="note">${typeLabel}</p>
+        <h3>${event.title}</h3>
+        <p><strong>開催日:</strong> ${event.scheduleLabel || "未設定"}</p>
+        <p><strong>会場:</strong> ${event.place || "未設定"}</p>
+        <p>${event.description || "詳細はコミニティカレンダーをご確認ください。"}</p>
+        <button class="button" type="button" data-action="select-learning-event">この開催日に参加登録</button>
+    `;
+
+    return card;
+}
+
 function applyEventFilters() {
     const typeFilter = document.getElementById("managed-event-type-filter");
-    const categoryFilter = document.getElementById("managed-event-category-filter");
+    const categoryFilter = document.getElementById("learning-category-filter");
     const searchInput = document.getElementById("managed-event-search");
     const empty = document.getElementById("managed-events-empty");
     const cards = document.querySelectorAll(".managed-event-card");
@@ -443,7 +478,7 @@ function bindDriveDocUploadForm(config) {
 }
 
 function fillManagedEventCategoryFilter(categories) {
-    const select = document.getElementById("managed-event-category-filter");
+    const select = document.getElementById("learning-category-filter");
     if (!select) {
         return;
     }
@@ -460,24 +495,60 @@ function fillManagedEventCategoryFilter(categories) {
     }
 }
 
+function bindLearningEventSelection(events) {
+    const list = document.getElementById("managed-events-list");
+    const select = document.getElementById("recruit-event-id");
+    const form = document.getElementById("event-recruit-form");
+
+    if (!list || !select || !form) {
+        return;
+    }
+
+    list.addEventListener("click", (event) => {
+        const button = event.target.closest('[data-action="select-learning-event"]');
+        if (!button) {
+            return;
+        }
+
+        const card = button.closest(".learning-event-card");
+        const eventId = card?.dataset.eventId;
+        if (!eventId) {
+            return;
+        }
+
+        const matched = events.find((item) => item.id === eventId);
+        if (!matched) {
+            return;
+        }
+
+        select.value = matched.id;
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+        const nameInput = form.querySelector('input[name="name"]');
+        if (nameInput instanceof HTMLElement) {
+            nameInput.focus();
+        }
+    });
+}
+
 export async function initManagedEventsPage(config) {
     const list = document.getElementById("managed-events-list");
     if (!list) {
         return;
     }
 
-    const events = await loadManagedEvents(config);
-    const categories = await loadEventCategories(config, events);
+    const events = (await loadManagedEvents(config)).filter(isLearningEvent);
+    await loadEventCategories(config, events);
+    const categories = getLearningCategories(events);
 
     list.innerHTML = "";
     events.forEach((event) => {
-        list.appendChild(createManagedEventCard(event));
+        list.appendChild(createLearningEventCard(event));
     });
 
     fillManagedEventCategoryFilter(categories);
 
     const typeFilter = document.getElementById("managed-event-type-filter");
-    const categoryFilter = document.getElementById("managed-event-category-filter");
+    const categoryFilter = document.getElementById("learning-category-filter");
     const search = document.getElementById("managed-event-search");
     typeFilter?.addEventListener("change", applyEventFilters);
     categoryFilter?.addEventListener("change", applyEventFilters);
@@ -485,7 +556,7 @@ export async function initManagedEventsPage(config) {
     applyEventFilters();
 
     bindRecruitForm(config, events);
-    bindAttendanceForm(config, events);
+    bindLearningEventSelection(events);
 }
 
 export function initAdminCommunityForms(config) {

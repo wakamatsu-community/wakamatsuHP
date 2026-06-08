@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="地域マップアイコン">
+  <rect width="160" height="160" rx="22" fill="#FFF5E8"/>
+  <rect x="20" y="26" width="120" height="108" rx="16" fill="#DDF3D6" stroke="#9CC49D" stroke-width="4"/>
+  <path d="M30 106C56 98 70 70 90 70c24 0 22 20 40 24" fill="none" stroke="#8ABF86" stroke-width="7" stroke-linecap="round"/>
+  <path d="M32 78c18 2 28-18 44-18 16 0 20 12 38 12" fill="none" stroke="#A5D7A4" stroke-width="6" stroke-linecap="round"/>
+  <g fill="#F7D6A0" stroke="#C58D57" stroke-width="3">
+    <path d="M34 92h22v18H34z"/>
+    <path d="M32 92l13-10 13 10"/>
+    <path d="M92 96h24v18H92z"/>
+    <path d="M90 96l14-11 14 11"/>
+  </g>
+  <path d="M80 44c-9 0-16 6-16 15 0 10 16 28 16 28s16-18 16-28c0-9-7-15-16-15z" fill="#FF9C67" stroke="#D5673C" stroke-width="4"/>
+  <circle cx="80" cy="59" r="6" fill="#FFECDD"/>
+</svg>

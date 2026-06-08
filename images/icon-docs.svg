@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="回覧板資料アイコン">
+  <rect width="160" height="160" rx="22" fill="#FFF5E8"/>
+  <g transform="translate(24 24)">
+    <rect x="10" y="18" width="72" height="88" rx="9" fill="#FAE4BF" stroke="#D29E62" stroke-width="4" transform="rotate(-8 46 62)"/>
+    <rect x="40" y="10" width="74" height="94" rx="10" fill="#FFF8EE" stroke="#C98F50" stroke-width="4"/>
+    <rect x="58" y="30" width="38" height="25" rx="4" fill="#D5F1D6" stroke="#7FB07E" stroke-width="3"/>
+    <path d="M70 48l7-10 7 8 6-8" fill="none" stroke="#6F9F6E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="56" y1="68" x2="102" y2="68" stroke="#DFCBAF" stroke-width="3"/>
+    <line x1="56" y1="80" x2="98" y2="80" stroke="#DFCBAF" stroke-width="3"/>
+    <line x1="56" y1="92" x2="90" y2="92" stroke="#DFCBAF" stroke-width="3"/>
+  </g>
+</svg>

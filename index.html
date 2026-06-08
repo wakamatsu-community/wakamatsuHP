@@ -30,49 +30,73 @@
         </header>
 
         <main>
-            <section class="hero card">
+            <section class="hero card home-hero">
                 <div class="hero-body">
-                    <p class="eyebrow">WAKAMATSU COMMUNITY PORTAL</p>
-                    <h1>若松町町内会ポータルサイト</h1>
-                    <p>暮らしに必要な情報を一つにまとめた、町内会の公式ポータルです。</p>
+                    <p class="eyebrow hero-pill">WAKAMATSU COMMUNITY PORTAL</p>
+                    <h1>若松町へ<br>ようこそ！</h1>
+                    <p>町のお知らせやイベント、防災のことなど、暮らしに役立つ情報をひとつにまとめました。どなたでもかんたんにお使いいただけます。</p>
+                    <p class="hero-note">😊 こまったときは、まずこのページを見てね</p>
                 </div>
                 <div class="hero-image-wrap">
-                    <img src="images/hero-town.svg" alt="若松町の街並みイメージ" class="hero-image">
+                    <img src="images/home-community.svg" alt="若松町の街並みと住民イメージ" class="hero-image">
                 </div>
             </section>
 
-            <section class="card-grid">
-                <article class="card">
+            <section class="card-grid home-info-grid">
+                <article class="card home-news-card">
                     <h2>📢 最新のお知らせ</h2>
-                    <ul class="news-list">
+                    <ul id="home-news-list" class="news-list">
                         <li><strong>6/15:</strong> 町内一斉清掃を実施します</li>
                         <li><strong>6/08:</strong> 夏祭りボランティア募集を開始しました</li>
                         <li><strong>6/01:</strong> 回覧板6月号を掲載しました</li>
                     </ul>
                 </article>
-                <article class="card emergency-card">
+                <article class="card emergency-card home-emergency-card">
                     <h2>🚨 緊急情報</h2>
                     <p id="emergency-text">現在、緊急のお知らせはありません。</p>
                     <a class="button-link danger" href="disaster.html">防災ページへ</a>
                 </article>
             </section>
 
-            <section class="card-grid quick-links">
-                <a class="card portal-link" href="events.html">
+            <section class="home-section-title">
+                <h2>やりたいことを選んでね</h2>
+            </section>
+
+            <section class="card-grid quick-links home-quick-links">
+                <a class="card portal-link home-link-card" href="events.html">
+                    <div class="home-link-icon-wrap">
+                        <img src="images/icon-events.svg" alt="イベント情報アイコン" class="home-link-icon">
+                    </div>
                     <h3>🎉 イベント情報</h3>
-                    <p>町内会行事、清掃活動、防災訓練などの予定を確認できます。</p>
+                    <p>夏祭りや清掃、防災訓練などの予定を確認できます。</p>
                 </a>
-                <a class="card portal-link" href="documents.html">
+                <a class="card portal-link home-link-card" href="documents.html">
+                    <div class="home-link-icon-wrap">
+                        <img src="images/icon-docs.svg" alt="回覧板と資料室アイコン" class="home-link-icon">
+                    </div>
                     <h3>📚 回覧板・資料室</h3>
                     <p>回覧板、議事録、会則などのPDF資料を一覧できます。</p>
                 </a>
-                <a class="card portal-link" href="map.html">
+                <a class="card portal-link home-link-card" href="map.html">
+                    <div class="home-link-icon-wrap">
+                        <img src="images/icon-map.svg" alt="地域マップアイコン" class="home-link-icon">
+                    </div>
                     <h3>🗺️ 地域マップ</h3>
                     <p>集会所、避難所、AED、防災倉庫などの位置情報を確認できます。</p>
                 </a>
-                <a class="card portal-link" href="disaster.html">
+                <a class="card portal-link home-link-card" href="disaster.html">
+                    <div class="home-link-icon-wrap">
+                        <img src="images/icon-disaster.svg" alt="防災情報アイコン" class="home-link-icon">
+                    </div>
                     <h3>⛑️ 防災情報</h3>
                     <p>避難場所一覧、防災マニュアル、災害時連絡手順を掲載しています。</p>
+                </a>
+                <a class="card portal-link home-link-card" href="gallery.html">
+                    <div class="home-link-icon-wrap">
+                        <img src="images/icon-gallery.svg" alt="写真アルバムアイコン" class="home-link-icon">
+                    </div>
+                    <h3>📷 写真アルバム</h3>
+                    <p>自由に投稿してください。個人情報に問題がないことを確認してください。町内の活動で活用する場合もあります。</p>
                 </a>
             </section>
         </main>

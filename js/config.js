@@ -15,13 +15,7 @@ export const SITE_CONFIG = {
     // ------------------------------------------------------------------
     calendar: {
         mainUrl: "https://calendar.google.com/calendar/embed?src=sample-main%40example.com&ctz=Asia%2FTokyo&mode=MONTH",
-        embeds: [
-            { title: "町内会行事",  url: "https://calendar.google.com/calendar/embed?src=sample-community%40example.com&ctz=Asia%2FTokyo" },
-            { title: "清掃活動",    url: "https://calendar.google.com/calendar/embed?src=sample-cleanup%40example.com&ctz=Asia%2FTokyo" },
-            { title: "防災訓練",    url: "https://calendar.google.com/calendar/embed?src=sample-disaster%40example.com&ctz=Asia%2FTokyo" },
-            { title: "夏祭り",      url: "https://calendar.google.com/calendar/embed?src=sample-summer%40example.com&ctz=Asia%2FTokyo" },
-            { title: "学びの会",    url: "https://calendar.google.com/calendar/embed?src=sample-learning%40example.com&ctz=Asia%2FTokyo" }
-        ],
+        learningUrl: "https://calendar.google.com/calendar/embed?src=sample-learning%40example.com&ctz=Asia%2FTokyo&mode=AGENDA",
         management: {
             eventsSheetUrl: "https://docs.google.com/spreadsheets/d/sample-events-sheet-id/gviz/tq?tqx=out:json",
             eventsEditUrl: "https://docs.google.com/spreadsheets/d/sample-events-sheet-id/edit#gid=0",
@@ -32,7 +26,7 @@ export const SITE_CONFIG = {
             categoriesEditUrl: "https://docs.google.com/spreadsheets/d/sample-event-categories-sheet-id/edit#gid=0",
             categorySubmitEndpoint: "https://script.google.com/macros/s/sample-event-category-script-id/exec"
         },
-        mockCategories: ["清掃", "会議", "ミニ集会", "セミナー", "防災"],
+        mockCategories: ["清掃", "会議", "ミニ集会", "セミナー", "防災", "コミニティ"],
         mockManagedEvents: [
             {
                 id: "EV-001",
@@ -47,11 +41,21 @@ export const SITE_CONFIG = {
             {
                 id: "EV-002",
                 type: "special",
-                title: "ミニ防災セミナー",
-                category: "セミナー",
+                title: "コミニティ 6月講座",
+                category: "コミニティ",
                 scheduleLabel: "2026-07-12 10:00",
                 place: "若松集会所",
-                description: "30分の防災講話と質疑",
+                description: "防災をテーマにしたコミニティ講座です。初参加の方も歓迎します。",
+                recruitFormUrl: "https://forms.gle/sample-seminar-recruit"
+            },
+            {
+                id: "EV-003",
+                type: "special",
+                title: "コミニティ 7月講座",
+                category: "コミニティ",
+                scheduleLabel: "2026-07-26 10:00",
+                place: "若松集会所",
+                description: "地域交流と防災知識を学ぶコミニティ講座です。",
                 recruitFormUrl: "https://forms.gle/sample-seminar-recruit"
             }
         ]

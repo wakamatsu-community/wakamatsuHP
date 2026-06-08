@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-label="若松町の住民と街並み">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#DFF3E4"/>
+      <stop offset="100%" stop-color="#F8F2DE"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="640" rx="24" fill="url(#sky)"/>
+  <g fill="#F6F2E8" opacity="0.95">
+    <ellipse cx="160" cy="96" rx="70" ry="28"/>
+    <ellipse cx="420" cy="84" rx="58" ry="24"/>
+    <ellipse cx="720" cy="92" rx="76" ry="30"/>
+  </g>
+  <rect y="360" width="960" height="280" fill="#DDEAC9"/>
+  <g transform="translate(80 220)">
+    <g transform="translate(0 0)">
+      <rect x="0" y="76" width="180" height="120" fill="#F7E9CC" stroke="#C99864" stroke-width="5"/>
+      <polygon points="-10,76 90,10 190,76" fill="#E7AD74" stroke="#B9814E" stroke-width="5"/>
+      <rect x="64" y="120" width="52" height="76" fill="#D9DCE0" stroke="#9BA0A4" stroke-width="4"/>
+      <rect x="22" y="106" width="34" height="28" fill="#B9D7EC" stroke="#7B9AB0" stroke-width="4"/>
+    </g>
+    <g transform="translate(220 -30)">
+      <rect x="0" y="92" width="196" height="130" fill="#F3E5C2" stroke="#C99864" stroke-width="5"/>
+      <polygon points="-8,92 96,24 204,92" fill="#DCA067" stroke="#B87B4B" stroke-width="5"/>
+      <rect x="72" y="142" width="52" height="80" fill="#D9DCE0" stroke="#9BA0A4" stroke-width="4"/>
+      <rect x="24" y="122" width="36" height="30" fill="#B9D7EC" stroke="#7B9AB0" stroke-width="4"/>
+      <rect x="136" y="122" width="36" height="30" fill="#B9D7EC" stroke="#7B9AB0" stroke-width="4"/>
+    </g>
+    <g transform="translate(500 -8)">
+      <rect x="0" y="86" width="190" height="122" fill="#F8EBCA" stroke="#C99864" stroke-width="5"/>
+      <polygon points="-10,86 94,20 202,86" fill="#E8BE7F" stroke="#B9814E" stroke-width="5"/>
+      <rect x="72" y="132" width="50" height="76" fill="#D9DCE0" stroke="#9BA0A4" stroke-width="4"/>
+      <rect x="24" y="114" width="34" height="28" fill="#B9D7EC" stroke="#7B9AB0" stroke-width="4"/>
+      <rect x="132" y="114" width="34" height="28" fill="#B9D7EC" stroke="#7B9AB0" stroke-width="4"/>
+    </g>
+  </g>
+  <g transform="translate(640 430)">
+    <ellipse cx="0" cy="90" rx="90" ry="26" fill="#C8D5B8"/>
+    <circle cx="-40" cy="18" r="26" fill="#F7D1B2"/>
+    <rect x="-56" y="42" width="30" height="52" rx="12" fill="#E7B776"/>
+    <rect x="-24" y="42" width="28" height="52" rx="12" fill="#7FB2D9"/>
+    <circle cx="42" cy="28" r="18" fill="#F6C6A1"/>
+    <rect x="28" y="44" width="28" height="40" rx="10" fill="#93C17F"/>
+    <circle cx="82" cy="40" r="13" fill="#F3BE95"/>
+    <rect x="72" y="52" width="20" height="28" rx="8" fill="#E7B776"/>
+  </g>
+  <g fill="#BFD8A0" stroke="#88A86E" stroke-width="4">
+    <circle cx="260" cy="240" r="56"/>
+    <circle cx="340" cy="256" r="44"/>
+    <circle cx="700" cy="254" r="52"/>
+  </g>
+</svg>

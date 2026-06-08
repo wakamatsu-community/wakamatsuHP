@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="防災情報アイコン">
+  <rect width="160" height="160" rx="22" fill="#FFF5E8"/>
+  <g transform="translate(20 24)">
+    <rect x="48" y="30" width="72" height="56" rx="12" fill="#FFD8B4" stroke="#C97F4A" stroke-width="4"/>
+    <rect x="64" y="44" width="40" height="28" rx="6" fill="#FFF6ED" stroke="#D3A176" stroke-width="3"/>
+    <path d="M84 48v20M74 58h20" stroke="#D9534F" stroke-width="4" stroke-linecap="round"/>
+    <path d="M64 30c0-9 6-15 16-15h8c10 0 16 6 16 15" fill="none" stroke="#C97F4A" stroke-width="4"/>
+  </g>
+  <g transform="translate(14 90)">
+    <circle cx="28" cy="22" r="18" fill="#FFFFFF" stroke="#D9534F" stroke-width="4"/>
+    <path d="M28 12v20M18 22h20" stroke="#D9534F" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="98" cy="24" rx="26" ry="18" fill="#FFD978" stroke="#D0A44D" stroke-width="4"/>
+    <circle cx="91" cy="24" r="2" fill="#8A6A2B"/>
+    <path d="M72 24h12" stroke="#D0A44D" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

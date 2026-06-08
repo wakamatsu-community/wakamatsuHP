@@ -31,10 +31,7 @@
             <section class="page-title card">
                 <h1>備品予約</h1>
                 <p>備品を選択して空き状況を確認し、空き日程を選んで予約情報を入力できます。</p>
-                <div class="button-row">
-                    <a id="equipment-master-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">備品マスターSheet</a>
-                    <a id="equipment-reservation-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">予約台帳Sheet</a>
-                </div>
+                <p class="note">備品マスターSheetと予約台帳Sheetの確認は管理ページで行います。</p>
             </section>
 
             <section class="card">
@@ -53,14 +50,14 @@
             </section>
 
             <section class="card">
-                <h2>2. カレンダー表示（ガント風）</h2>
+                <h2>2. カレンダー表示（4週表示）</h2>
                 <p class="note">緑: 空き / 赤: 貸出中。空きセルをタップして貸出日と返納日を選択します。</p>
                 <div class="timeline-toolbar">
                     <label class="filter-field">
-                        <span>表示開始日</span>
+                        <span>表示基準日（4週間を表示）</span>
                         <input id="timeline-start-date" type="date">
                     </label>
-                    <button id="timeline-reset" class="button" type="button">今日から表示</button>
+                    <button id="timeline-reset" class="button" type="button">今週から4週間</button>
                 </div>
                 <div id="equipment-gantt" class="equipment-gantt" aria-live="polite"></div>
                 <p id="gantt-selection-note" class="note">まず空きセルを1つ選択してください。</p>
