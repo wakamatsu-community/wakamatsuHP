@@ -1,5 +1,5 @@
 import { SITE_CONFIG } from "./config.js";
-import { initCalendarPage } from "./calendar.js";
+import { initAdminCalendarForm, initCalendarPage } from "./calendar.js";
 import { initDocumentsPage } from "./drive.js";
 import { initMapPage } from "./map.js";
 import { initFormsPage } from "./form.js";
@@ -32,7 +32,11 @@ function setupNavigation() {
 
 function isCommunityEvent(event) {
     const text = `${event?.category || ""} ${event?.title || ""}`.toLowerCase();
-    return text.includes("学び") || text.includes("コミニティ") || text.includes("コミュニティ");
+    return text.includes("学び")
+        || text.includes("コミニティ")
+        || text.includes("コミュニティ")
+        || text.includes("コミュニティー")
+        || text.includes("community");
 }
 
 function parseEventDate(scheduleLabel) {
@@ -59,6 +63,15 @@ function formatDateLabel(date) {
     const day = date.getDate();
     const weekday = ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
     return `${month}/${day}(${weekday})`;
+}
+
+function getCurrentMonthNumber() {
+    return new Date().getMonth() + 1;
+}
+
+function isCurrentMonth(date) {
+    const now = new Date();
+    return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
 }
 
 function renderHomeNews(listEl, events) {
@@ -88,6 +101,35 @@ function renderHomeNews(listEl, events) {
     });
 }
 
+function renderHomeMonthlyEvents(statusEl, listEl, events) {
+    const month = getCurrentMonthNumber();
+    const monthlyEvents = events
+        .map((event) => ({
+            ...event,
+            date: parseEventDate(event.scheduleLabel)
+        }))
+        .filter((event) => event.type === "recurring" || (event.date && isCurrentMonth(event.date)));
+
+    if (statusEl) {
+        statusEl.textContent = `${month}月の行事予定は${monthlyEvents.length}件です。`;
+    }
+
+    if (monthlyEvents.length === 0) {
+        listEl.innerHTML = "<li><strong>今月:</strong> 行事予定はありません</li>";
+        return;
+    }
+
+    listEl.innerHTML = "";
+    monthlyEvents.forEach((event) => {
+        const li = document.createElement("li");
+        const schedule = event.scheduleLabel || "日時未設定";
+        const content = event.title || "行事名未設定";
+        const supplement = event.description || "補足なし";
+        li.innerHTML = `<strong>${content}</strong><br>予定: ${schedule}<br>補足: ${supplement}`;
+        listEl.appendChild(li);
+    });
+}
+
 async function setupHomePage(config) {
     const emergency = document.getElementById("emergency-text");
     if (emergency) {
@@ -95,12 +137,17 @@ async function setupHomePage(config) {
     }
 
     const newsList = document.getElementById("home-news-list");
+    const monthlyStatus = document.getElementById("home-monthly-status");
+    const monthlyList = document.getElementById("home-monthly-list");
     if (!newsList) {
         return;
     }
 
     const events = await loadAllManagedEvents(config);
     renderHomeNews(newsList, events);
+    if (monthlyList) {
+        renderHomeMonthlyEvents(monthlyStatus, monthlyList, events);
+    }
 }
 
 function setupDisasterPage(config) {
@@ -151,6 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (page === "admin") {
         await initAdminReturnAlerts(SITE_CONFIG);
         initAdminCommunityForms(SITE_CONFIG);
+        initAdminCalendarForm();
         initFirebaseAdminSection();
     }
 });

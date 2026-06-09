@@ -96,6 +96,31 @@
                     <a id="admin-event-categories-sheet-link" class="button-link" href="#" target="_blank" rel="noopener noreferrer">カテゴリ管理Sheet</a>
                 </div>
 
+                <form id="admin-calendar-create-form" class="inline-form card sub-card calendar-create-form-grid">
+                    <h3>町内会カレンダー予定を管理者登録</h3>
+                    <label>イベント名
+                        <input name="title" type="text" placeholder="例: 防災訓練" required>
+                    </label>
+                    <label>開始日時
+                        <input name="start" type="datetime-local" required>
+                    </label>
+                    <label>終了日時
+                        <input name="end" type="datetime-local">
+                    </label>
+                    <label>場所
+                        <input name="location" type="text" placeholder="例: 若松集会所">
+                    </label>
+                    <label class="calendar-create-description">補足説明
+                        <textarea name="description" placeholder="補足情報"></textarea>
+                    </label>
+                    <label class="checkbox-line">
+                        <input name="allDay" type="checkbox">
+                        終日予定として登録
+                    </label>
+                    <button class="button" type="submit">町内会カレンダーへ登録</button>
+                    <p id="admin-calendar-create-status" class="note" aria-live="polite"></p>
+                </form>
+
                 <form id="admin-event-category-form" class="inline-form card sub-card">
                     <h3>行事カテゴリ管理</h3>
                     <label>カテゴリ名

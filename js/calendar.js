@@ -14,6 +14,18 @@ function toIsoDate(value) {
     return date.toISOString();
 }
 
+function toDatetimeLocalValue(value) {
+    if (!value) {
+        return "";
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 function loadLocalAddedEvents() {
     try {
         const raw = localStorage.getItem(LOCAL_ADDED_EVENTS_KEY);
@@ -122,62 +134,49 @@ function renderEventDetailModal(info) {
     description.textContent = event.extendedProps?.description || "説明なし";
 }
 
-function bindCreateForm(calendar) {
-    const form = document.getElementById("calendar-create-form");
-    const status = document.getElementById("calendar-create-status");
-    if (!(form && status)) {
-        return;
+async function saveTownCalendarEvent(formData) {
+    const title = String(formData.get("title") || "").trim();
+    const start = String(formData.get("start") || "");
+    const end = String(formData.get("end") || "");
+    const location = String(formData.get("location") || "").trim();
+    const description = String(formData.get("description") || "").trim();
+    const allDay = formData.get("allDay") === "on";
+
+    if (!title || !start) {
+        return { ok: false, message: "イベント名と開始日時は必須です。" };
     }
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const fd = new FormData(form);
+    const event = {
+        id: `local-${Date.now()}`,
+        title,
+        start: allDay ? start.slice(0, 10) : toIsoDate(start),
+        end: end ? (allDay ? end.slice(0, 10) : toIsoDate(end)) : "",
+        allDay,
+        location,
+        description
+    };
 
-        const title = String(fd.get("title") || "").trim();
-        const start = String(fd.get("start") || "");
-        const end = String(fd.get("end") || "");
-        const location = String(fd.get("location") || "").trim();
-        const description = String(fd.get("description") || "").trim();
-        const allDay = fd.get("allDay") === "on";
+    const localEvents = loadLocalAddedEvents();
+    saveLocalAddedEvents([...localEvents, event]);
 
-        if (!title || !start) {
-            status.textContent = "タイトルと開始日時は必須です。";
-            return;
-        }
-
-        const newEvent = {
-            id: `local-${Date.now()}`,
-            title,
-            start: allDay ? start.slice(0, 10) : toIsoDate(start),
-            end: end ? (allDay ? end.slice(0, 10) : toIsoDate(end)) : "",
-            allDay,
-            location,
-            description
-        };
-
-        const localEvents = loadLocalAddedEvents();
-        saveLocalAddedEvents([...localEvents, newEvent]);
-        calendar.addEvent(toLocalCalendarEvent(newEvent));
-
-        const cloudSaved = await saveCalendarEventDraft({
-            title,
-            start: newEvent.start,
-            end: newEvent.end,
-            allDay,
-            location,
-            description
-        });
-
-        if (cloudSaved.ok) {
-            status.textContent = "予定を追加しました（Firestoreにも保存済み）。";
-        } else if (cloudSaved.reason === "not-signed-in") {
-            status.textContent = "予定を追加しました（ローカル保存）。Firestoreへ保存するには管理ページでログインしてください。";
-        } else {
-            status.textContent = "予定を追加しました（ローカル保存）。";
-        }
-
-        form.reset();
+    const cloudSaved = await saveCalendarEventDraft({
+        title,
+        start: event.start,
+        end: event.end,
+        allDay,
+        location,
+        description
     });
+
+    if (cloudSaved.ok) {
+        return { ok: true, message: "町内会カレンダー予定を登録しました（Firestoreにも保存済み）。" };
+    }
+
+    if (cloudSaved.reason === "not-signed-in") {
+        return { ok: true, message: "町内会カレンダー予定を登録しました（ローカル保存）。管理者ログイン中はFirestoreにも保存されます。" };
+    }
+
+    return { ok: true, message: "町内会カレンダー予定を登録しました（ローカル保存）。" };
 }
 
 function setCalendarConnectionStatus(message) {
@@ -229,13 +228,30 @@ export async function initCalendarPage() {
     } else {
         setCalendarConnectionStatus("Google Calendar APIの取得結果が0件、または環境変数未設定です。`GOOGLE_CALENDAR_API_KEY` と `GOOGLE_CALENDAR_ID` を確認してください。");
     }
+}
 
-    bindCreateForm(calendar);
-
-    const loginHint = document.getElementById("calendar-login-hint");
-    if (loginHint) {
-        loginHint.textContent = getCurrentUser()
-            ? "現在ログイン中です。追加予定はFirestoreにも保存されます。"
-            : "未ログインです。予定はローカル保存されます（管理ページでログインするとFirestoreにも保存）。";
+export function initAdminCalendarForm() {
+    const form = document.getElementById("admin-calendar-create-form");
+    const status = document.getElementById("admin-calendar-create-status");
+    if (!(form && status)) {
+        return;
     }
+
+    const loginState = getCurrentUser();
+    if (!loginState) {
+        status.textContent = "管理者ログインなしでも登録はできますが、ローカル保存になります。";
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const result = await saveTownCalendarEvent(new FormData(form));
+        status.textContent = result.message;
+        if (result.ok) {
+            form.reset();
+            const startInput = form.querySelector('input[name="start"]');
+            if (startInput instanceof HTMLInputElement) {
+                startInput.value = toDatetimeLocalValue(new Date());
+            }
+        }
+    });
 }

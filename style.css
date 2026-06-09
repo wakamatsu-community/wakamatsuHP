@@ -110,9 +110,29 @@ body {
 }
 
 .home-hero {
+    position: relative;
+    isolation: isolate;
+    grid-template-columns: 1fr;
     background: #f8faf8;
     border: 1px solid #e3ece4;
     border-radius: 26px;
+}
+
+.home-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("images/home-wakamatsu-map.png") center center / 145% auto no-repeat;
+    opacity: 0.22;
+    transform: scale(1.05);
+    transform-origin: center;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.home-hero > * {
+    position: relative;
+    z-index: 1;
 }
 
 .hero-body h1 {
@@ -149,19 +169,20 @@ body {
     padding: 8px 14px;
     font-weight: 700;
     font-size: 0.95rem;
-}
-
-.hero-image-wrap {
-    text-align: center;
+    white-space: nowrap;
 }
 
 .hero-image {
     width: 100%;
-    max-width: 440px;
+    max-width: 220px;
     height: auto;
     border-radius: 16px;
     box-shadow: var(--shadow);
     animation: floatIn 0.8s ease;
+}
+
+.home-hero .hero-image {
+    box-shadow: var(--shadow);
 }
 
 @keyframes floatIn {
@@ -237,6 +258,10 @@ body {
     border-radius: 14px;
     padding: 14px 20px;
     box-shadow: 0 8px 18px rgba(220, 88, 69, 0.2);
+}
+
+.home-monthly-card {
+    margin-bottom: 18px;
 }
 
 .home-section-title {
@@ -575,6 +600,14 @@ body {
     .home-info-grid {
         grid-template-columns: 1fr;
     }
+
+    .hero-note {
+        font-size: 0.9rem;
+    }
+
+    .hero-image {
+        max-width: 160px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -794,6 +827,21 @@ body {
     min-height: 420px;
 }
 
+#learning-calendar .fc .fc-toolbar-title {
+    font-size: 1.1rem;
+    color: #2f5f4a;
+}
+
+#learning-calendar .fc .fc-button-primary {
+    background: #247246;
+    border-color: #247246;
+}
+
+#learning-calendar .fc .fc-button-primary:hover {
+    background: #1d603b;
+    border-color: #1d603b;
+}
+
 .learning-event-card {
     border-left: 4px solid var(--primary-color);
 }
@@ -828,11 +876,13 @@ body {
     gap: 10px;
 }
 
-#event-recruit-cancel {
+#event-recruit-cancel,
+#community-event-create-cancel {
     background: #ef7c3a;
 }
 
-#event-recruit-close {
+#event-recruit-close,
+#community-event-create-close {
     background: #5f6f68;
 }
 

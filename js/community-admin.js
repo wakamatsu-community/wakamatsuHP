@@ -179,6 +179,90 @@ function getLearningCategories(events) {
     return Array.from(new Set(events.map((event) => event.category).filter(Boolean)));
 }
 
+function parseScheduleLabelToCalendarEvent(event) {
+    const explicitStart = String(event?.start || "");
+    const explicitEnd = String(event?.end || "");
+    let start = explicitStart;
+    let end = explicitEnd;
+    let allDay = !String(explicitStart).includes("T");
+
+    if (!start) {
+        const label = String(event?.scheduleLabel || "");
+        const dateMatch = label.match(/(\d{4}-\d{2}-\d{2})/);
+        if (!dateMatch) {
+            return null;
+        }
+
+        const timeMatches = [...label.matchAll(/(\d{1,2}):(\d{2})/g)];
+        const date = dateMatch[1];
+        start = date;
+        end = "";
+        allDay = true;
+
+        if (timeMatches.length > 0) {
+            const [startHour, startMinute] = timeMatches[0].slice(1, 3);
+            start = `${date}T${startHour.padStart(2, "0")}:${startMinute}:00`;
+            allDay = false;
+        }
+
+        if (timeMatches.length > 1) {
+            const [endHour, endMinute] = timeMatches[1].slice(1, 3);
+            end = `${date}T${endHour.padStart(2, "0")}:${endMinute}:00`;
+        }
+    }
+
+    return {
+        id: event.id,
+        title: event.title || "(タイトル未設定)",
+        start,
+        end,
+        allDay,
+        backgroundColor: event.type === "special" ? "#ec7b3a" : "#247246",
+        borderColor: event.type === "special" ? "#ec7b3a" : "#247246",
+        extendedProps: {
+            sourceEventId: event.id,
+            sourceType: event.type,
+            scheduleLabel: event.scheduleLabel || "",
+            minParticipants: event.minParticipants || "",
+            maxParticipants: event.maxParticipants || ""
+        }
+    };
+}
+
+function toDatetimeLocalValue(value) {
+    if (!value) {
+        return "";
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function formatScheduleLabelFromRange(startIso, endIso) {
+    const start = new Date(startIso);
+    if (Number.isNaN(start.getTime())) {
+        return "";
+    }
+    const pad = (n) => String(n).padStart(2, "0");
+    const dateLabel = `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`;
+    const startTime = `${pad(start.getHours())}:${pad(start.getMinutes())}`;
+
+    if (!endIso) {
+        return `${dateLabel} ${startTime}`;
+    }
+
+    const end = new Date(endIso);
+    if (Number.isNaN(end.getTime())) {
+        return `${dateLabel} ${startTime}`;
+    }
+
+    const endTime = `${pad(end.getHours())}:${pad(end.getMinutes())}`;
+    return `${dateLabel} ${startTime}-${endTime}`;
+}
+
 function createLearningEventCard(event) {
     const card = document.createElement("article");
     card.className = "card managed-event-card learning-event-card";
@@ -194,6 +278,7 @@ function createLearningEventCard(event) {
         <h3>${event.title}</h3>
         <p><strong>開催日:</strong> ${event.scheduleLabel || "未設定"}</p>
         <p><strong>会場:</strong> ${event.place || "未設定"}</p>
+        <p><strong>参加人数:</strong> ${event.minParticipants ? `${event.minParticipants}〜${event.maxParticipants || ""}名` : "制限なし"}</p>
         <p>${event.description || "詳細はコミニティカレンダーをご確認ください。"}</p>
         ${event.type === "special"
         ? '<button class="button" type="button" data-action="select-learning-event">この開催日に参加登録</button>'
@@ -344,6 +429,134 @@ function closeRecruitModal() {
     document.body.style.overflow = "";
 }
 
+function openCommunityCreateModal(prefill = {}) {
+    const modal = document.getElementById("community-event-create-modal");
+    const form = document.getElementById("community-event-create-form");
+    const status = document.getElementById("community-event-create-status");
+    if (!(modal && form && status)) {
+        return;
+    }
+
+    if (prefill.start) {
+        const startInput = form.querySelector('input[name="start"]');
+        if (startInput instanceof HTMLInputElement) {
+            startInput.value = toDatetimeLocalValue(prefill.start);
+        }
+    }
+    if (prefill.end) {
+        const endInput = form.querySelector('input[name="end"]');
+        if (endInput instanceof HTMLInputElement) {
+            endInput.value = toDatetimeLocalValue(prefill.end);
+        }
+    }
+
+    status.textContent = "";
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+
+    const titleInput = form.querySelector('input[name="title"]');
+    if (titleInput instanceof HTMLElement) {
+        titleInput.focus();
+    }
+}
+
+function closeCommunityCreateModal() {
+    const modal = document.getElementById("community-event-create-modal");
+    if (!modal) {
+        return;
+    }
+    modal.classList.add("hidden");
+    document.body.style.overflow = "";
+}
+
+function bindCommunityCreateModal(config, events, onEventAdded) {
+    const openButton = document.getElementById("open-community-event-create");
+    const modal = document.getElementById("community-event-create-modal");
+    const form = document.getElementById("community-event-create-form");
+    const status = document.getElementById("community-event-create-status");
+    const cancelButton = document.getElementById("community-event-create-cancel");
+    const closeButton = document.getElementById("community-event-create-close");
+
+    if (!(openButton && modal && form && status && cancelButton && closeButton)) {
+        return;
+    }
+
+    openButton.addEventListener("click", () => {
+        openCommunityCreateModal();
+    });
+
+    cancelButton.addEventListener("click", () => {
+        form.reset();
+        status.textContent = "入力内容をクリアしました。";
+    });
+
+    closeButton.addEventListener("click", () => {
+        closeCommunityCreateModal();
+    });
+
+    modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            closeCommunityCreateModal();
+        }
+    });
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const fd = new FormData(form);
+        const minParticipants = Number(fd.get("minParticipants") || 1);
+        const maxParticipants = Number(fd.get("maxParticipants") || 0);
+
+        if (!Number.isFinite(minParticipants) || !Number.isFinite(maxParticipants) || minParticipants < 1 || maxParticipants < minParticipants) {
+            status.textContent = "参加人数の最小・最大を正しく入力してください。";
+            return;
+        }
+
+        const start = String(fd.get("start") || "");
+        const end = String(fd.get("end") || "");
+        const newEvent = {
+            id: `EV-${Date.now()}`,
+            type: "special",
+            title: String(fd.get("title") || "").trim(),
+            category: "コミニティ",
+            scheduleLabel: formatScheduleLabelFromRange(start, end),
+            place: String(fd.get("place") || "").trim(),
+            description: String(fd.get("description") || "").trim(),
+            minParticipants,
+            maxParticipants,
+            start: start ? new Date(start).toISOString() : "",
+            end: end ? new Date(end).toISOString() : "",
+            recruitFormUrl: ""
+        };
+
+        if (!newEvent.title || !newEvent.start || !newEvent.place) {
+            status.textContent = "イベント名・開始日時・場所は必須です。";
+            return;
+        }
+
+        const posted = await postToEndpoint(config?.calendar?.management?.submitEndpoint, {
+            type: "managedEvent",
+            event: newEvent
+        });
+
+        const local = loadLocalEvents(config);
+        saveLocalEvents([...local, newEvent]);
+        events.push(newEvent);
+        onEventAdded(newEvent);
+
+        status.textContent = posted
+            ? "コミニティ予定を登録しました。"
+            : "コミニティ予定を登録しました（Apps Script未設定のためローカル保存）。";
+        form.reset();
+        closeCommunityCreateModal();
+    });
+
+    window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+            closeCommunityCreateModal();
+        }
+    });
+}
+
 function bindRecruitModalActions() {
     const modal = document.getElementById("event-recruit-modal");
     const form = document.getElementById("event-recruit-form");
@@ -380,6 +593,123 @@ function bindRecruitModalActions() {
             closeRecruitModal();
         }
     });
+}
+
+function openRecruitFormForEvent(events, eventId) {
+    const select = document.getElementById("recruit-event-id");
+    const form = document.getElementById("event-recruit-form");
+    const status = document.getElementById("event-recruit-status");
+
+    if (!(select && form && status)) {
+        return;
+    }
+
+    const matched = events.find((item) => item.id === eventId);
+    if (!matched) {
+        return;
+    }
+
+    select.value = matched.id;
+    status.textContent = "";
+    openRecruitModal();
+
+    const nameInput = form.querySelector('input[name="name"]');
+    if (nameInput instanceof HTMLElement) {
+        nameInput.focus();
+    }
+}
+
+function renderLearningSelectedEvent(event, events) {
+    const title = document.getElementById("learning-selected-event-title");
+    const datetime = document.getElementById("learning-selected-event-datetime");
+    const place = document.getElementById("learning-selected-event-place");
+    const capacity = document.getElementById("learning-selected-event-capacity");
+    const description = document.getElementById("learning-selected-event-description");
+    const joinButton = document.getElementById("learning-selected-event-join");
+
+    if (!(title && datetime && place && capacity && description && joinButton)) {
+        return;
+    }
+
+    if (!event) {
+        title.textContent = "開催日を選択してください";
+        datetime.textContent = "日時未選択";
+        place.textContent = "-";
+        capacity.textContent = "-";
+        description.textContent = "説明がここに表示されます。";
+        joinButton.disabled = true;
+        return;
+    }
+
+    title.textContent = event.title || "(タイトル未設定)";
+    datetime.textContent = event.scheduleLabel || "日時未設定";
+    place.textContent = event.place || "未設定";
+    capacity.textContent = event.minParticipants
+        ? `${event.minParticipants}〜${event.maxParticipants || ""}名`
+        : "制限なし";
+    description.textContent = event.description || "説明なし";
+    joinButton.disabled = false;
+    joinButton.onclick = () => {
+        openRecruitFormForEvent(events, event.id);
+    };
+}
+
+function renderLearningCalendar(events) {
+    const root = document.getElementById("learning-calendar");
+    const status = document.getElementById("learning-calendar-status");
+    if (!(root && status)) {
+        return;
+    }
+
+    if (!window.FullCalendar) {
+        status.textContent = "カレンダー表示ライブラリの読み込みに失敗しました。";
+        return;
+    }
+
+    const calendarEvents = events
+        .map(parseScheduleLabelToCalendarEvent)
+        .filter(Boolean);
+
+    const calendar = new window.FullCalendar.Calendar(root, {
+        locale: "ja",
+        initialView: "dayGridMonth",
+        height: "auto",
+        selectable: true,
+        headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,listMonth"
+        },
+        buttonText: {
+            today: "今日",
+            month: "月",
+            list: "一覧"
+        },
+        eventClick: (info) => {
+            const sourceEventId = info.event.extendedProps?.sourceEventId || info.event.id;
+            const selected = events.find((item) => item.id === sourceEventId);
+            renderLearningSelectedEvent(selected, events);
+        },
+        dateClick: (info) => {
+            openCommunityCreateModal({ start: info.date, end: "" });
+        },
+        select: (info) => {
+            openCommunityCreateModal({ start: info.start, end: info.end });
+        }
+    });
+
+    calendar.render();
+    calendarEvents.forEach((event) => {
+        calendar.addEvent(event);
+    });
+
+    if (calendarEvents.length === 0) {
+        status.textContent = "日付付き開催がまだないため、カレンダーに表示できる予定はありません。";
+    } else {
+        status.textContent = `カレンダーに${calendarEvents.length}件の開催予定を表示しています。予定をタップすると下に開催内容が表示されます。`;
+    }
+
+    return calendar;
 }
 
 function bindAttendanceForm(config, events) {
@@ -565,11 +895,7 @@ function fillManagedEventCategoryFilter(categories) {
 
 function bindLearningEventSelection(events) {
     const list = document.getElementById("managed-events-list");
-    const select = document.getElementById("recruit-event-id");
-    const form = document.getElementById("event-recruit-form");
-    const status = document.getElementById("event-recruit-status");
-
-    if (!list || !select || !form || !status) {
+    if (!list) {
         return;
     }
 
@@ -585,51 +911,40 @@ function bindLearningEventSelection(events) {
             return;
         }
 
-        const matched = events.find((item) => item.id === eventId);
-        if (!matched) {
-            return;
-        }
-
-        select.value = matched.id;
-        status.textContent = "";
-        openRecruitModal();
-        const nameInput = form.querySelector('input[name="name"]');
-        if (nameInput instanceof HTMLElement) {
-            nameInput.focus();
-        }
+        openRecruitFormForEvent(events, eventId);
     });
 }
 
 export async function initManagedEventsPage(config) {
-    const list = document.getElementById("managed-events-list");
-    if (!list) {
+    const calendarRoot = document.getElementById("learning-calendar");
+    if (!calendarRoot) {
         return;
     }
 
     const loadedEvents = await loadManagedEvents(config);
-    const events = loadedEvents.filter(isLearningEvent);
-    const displayEvents = events.length > 0 ? events : loadedEvents;
-    await loadEventCategories(config, events);
-    const categories = getLearningCategories(displayEvents);
+    const displayEvents = loadedEvents.filter((event) => isLearningEvent(event) && event.type === "special");
+    const recruitSelect = document.getElementById("recruit-event-id");
 
-    list.innerHTML = "";
-    displayEvents.forEach((event) => {
-        list.appendChild(createLearningEventCard(event));
-    });
-
-    fillManagedEventCategoryFilter(categories);
-
-    const typeFilter = document.getElementById("managed-event-type-filter");
-    const categoryFilter = document.getElementById("learning-category-filter");
-    const search = document.getElementById("managed-event-search");
-    typeFilter?.addEventListener("change", applyEventFilters);
-    categoryFilter?.addEventListener("change", applyEventFilters);
-    search?.addEventListener("input", applyEventFilters);
-    applyEventFilters();
+    if (recruitSelect) {
+        populateEventSelect(recruitSelect, displayEvents);
+    }
+    renderLearningSelectedEvent(null, displayEvents);
 
     bindRecruitForm(config, displayEvents);
     bindRecruitModalActions();
-    bindLearningEventSelection(displayEvents);
+    const learningCalendar = renderLearningCalendar(displayEvents);
+    bindCommunityCreateModal(config, displayEvents, (newEvent) => {
+        if (recruitSelect) {
+            populateEventSelect(recruitSelect, displayEvents);
+        }
+        if (learningCalendar) {
+            const parsed = parseScheduleLabelToCalendarEvent(newEvent);
+            if (parsed) {
+                learningCalendar.addEvent(parsed);
+            }
+        }
+        renderLearningSelectedEvent(newEvent, displayEvents);
+    });
 }
 
 export function initAdminCommunityForms(config) {

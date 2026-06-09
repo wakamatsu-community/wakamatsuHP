@@ -37,6 +37,7 @@
             <section class="card">
                 <h2>町内会カレンダー（カスタム表示）</h2>
                 <p id="calendar-connection-status" class="note">Google Calendar APIから読み込み中です...</p>
+                <p class="note">町内会カレンダーへの予定追加は管理ページから管理者が登録します。</p>
                 <div class="calendar-shell">
                     <div id="custom-calendar"></div>
                 </div>
@@ -49,58 +50,23 @@
             </section>
 
             <section class="card">
-                <h2>予定を追加</h2>
-                <p id="calendar-login-hint" class="note">ログイン状態を確認中です...</p>
-                <form id="calendar-create-form" class="inline-form calendar-create-form-grid">
-                    <label>タイトル
-                        <input name="title" type="text" placeholder="例: 防災訓練" required>
-                    </label>
-                    <label>開始日時
-                        <input name="start" type="datetime-local" required>
-                    </label>
-                    <label>終了日時
-                        <input name="end" type="datetime-local">
-                    </label>
-                    <label>場所
-                        <input name="location" type="text" placeholder="例: 若松集会所">
-                    </label>
-                    <label class="calendar-create-description">説明
-                        <textarea name="description" placeholder="補足情報"></textarea>
-                    </label>
-                    <label class="checkbox-line">
-                        <input name="allDay" type="checkbox">
-                        終日予定として登録
-                    </label>
-                    <button class="button" type="submit">予定を追加する</button>
-                    <p id="calendar-create-status" class="note" aria-live="polite"></p>
-                </form>
-            </section>
-
-            <section class="card">
                 <h2>コミニティ 開催日一覧</h2>
-                <p class="note">単発開催の「参加登録」ボタンを押すと参加フォームが開きます。</p>
-                <div class="filter-bar">
-                    <label class="filter-field">
-                        <span>表示種別</span>
-                        <select id="managed-event-type-filter">
-                            <option value="all">すべて</option>
-                            <option value="recurring">定例開催</option>
-                            <option value="special">単発開催</option>
-                        </select>
-                    </label>
-                    <label class="filter-field">
-                        <span>開催区分</span>
-                        <select id="learning-category-filter">
-                            <option value="all">すべて</option>
-                        </select>
-                    </label>
-                    <label class="filter-field search-field">
-                        <span>キーワード検索</span>
-                        <input id="managed-event-search" type="search" placeholder="タイトル・内容・場所で検索">
-                    </label>
+                <p class="note">コミニティ予定は誰でも登録できます。単発開催はカレンダーで日付を選ぶと下に内容が表示され、参加ボタンからフォームを開けます。</p>
+                <div class="calendar-shell learning-calendar-embed">
+                    <div id="learning-calendar"></div>
                 </div>
-                <div id="managed-events-list" class="section-stack"></div>
-                <p id="managed-events-empty" class="note hidden">条件に一致するコミニティ開催日がありません。</p>
+                <p id="learning-calendar-status" class="note">コミニティ開催カレンダーを準備中です...</p>
+                <div class="calendar-selected-event card sub-card">
+                    <h3 id="learning-selected-event-title">開催日を選択してください</h3>
+                    <p id="learning-selected-event-datetime" class="note">日時未選択</p>
+                    <p><strong>会場:</strong> <span id="learning-selected-event-place">-</span></p>
+                    <p><strong>参加人数:</strong> <span id="learning-selected-event-capacity">-</span></p>
+                    <p id="learning-selected-event-description">説明がここに表示されます。</p>
+                    <button id="learning-selected-event-join" class="button" type="button" disabled>この開催に参加登録</button>
+                </div>
+                <div class="button-row">
+                    <button id="open-community-event-create" class="button" type="button">コミニティ予定を登録する</button>
+                </div>
             </section>
         </main>
 
@@ -130,6 +96,42 @@
                         <button class="button" id="event-recruit-close" type="button">戻る</button>
                     </div>
                     <p id="event-recruit-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+        </div>
+
+        <div id="community-event-create-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="community-event-create-title">
+            <section class="modal-card">
+                <h2 id="community-event-create-title">コミニティ予定の登録</h2>
+                <p class="note">カレンダーで日付や時間帯を選ぶと日時が自動入力されます。必要項目を入力して登録してください。</p>
+                <form id="community-event-create-form" class="inline-form calendar-create-form-grid">
+                    <label>開催するイベント名
+                        <input name="title" type="text" required>
+                    </label>
+                    <label>開始日時
+                        <input name="start" type="datetime-local" required>
+                    </label>
+                    <label>終了日時
+                        <input name="end" type="datetime-local">
+                    </label>
+                    <label>場所
+                        <input name="place" type="text" placeholder="例: 若松集会所" required>
+                    </label>
+                    <label>参加人数（最小）
+                        <input name="minParticipants" type="number" min="1" value="1" required>
+                    </label>
+                    <label>参加人数（最大）
+                        <input name="maxParticipants" type="number" min="1" required>
+                    </label>
+                    <label class="calendar-create-description">補足説明
+                        <textarea name="description" placeholder="持ち物・注意事項など"></textarea>
+                    </label>
+                    <div class="button-row modal-button-row">
+                        <button class="button" type="submit">登録</button>
+                        <button class="button" id="community-event-create-cancel" type="button">キャンセル</button>
+                        <button class="button" id="community-event-create-close" type="button">戻る</button>
+                    </div>
+                    <p id="community-event-create-status" class="note" aria-live="polite"></p>
                 </form>
             </section>
         </div>
