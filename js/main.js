@@ -6,6 +6,7 @@ import { initFormsPage } from "./form.js";
 import { initGalleryPage } from "./gallery.js";
 import { initEquipmentPage, initAdminReturnAlerts } from "./equipment.js";
 import { initManagedEventsPage, initAdminCommunityForms, loadAllManagedEvents } from "./community-admin.js";
+import { initFirebaseAdminSection } from "./firebase-admin.js";
 
 function setupNavigation() {
     const current = location.pathname.split("/").pop() || "index.html";
@@ -150,5 +151,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (page === "admin") {
         await initAdminReturnAlerts(SITE_CONFIG);
         initAdminCommunityForms(SITE_CONFIG);
+        initFirebaseAdminSection();
     }
 });

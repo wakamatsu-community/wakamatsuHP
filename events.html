@@ -7,6 +7,7 @@
     <title>行事予定 | 若松町町内会ポータル</title>
     <meta name="description" content="町内会行事、清掃活動、防災訓練、夏祭り、コミニティの予定を確認できます。">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
 </head>
 <body data-page="events">
     <div class="container">
@@ -34,15 +35,45 @@
             </section>
 
             <section class="card">
-                <h2>町内会行事カレンダー</h2>
-                <p class="note">清掃活動、役員会、地域行事、防災訓練などをまとめて掲載します。</p>
-                <div id="calendar-main"></div>
+                <h2>町内会カレンダー（カスタム表示）</h2>
+                <p id="calendar-connection-status" class="note">Google Calendar APIから読み込み中です...</p>
+                <div class="calendar-shell">
+                    <div id="custom-calendar"></div>
+                </div>
+                <div class="calendar-selected-event card sub-card">
+                    <h3 id="calendar-selected-event-title">予定を選択してください</h3>
+                    <p id="calendar-selected-event-datetime" class="note">日時未選択</p>
+                    <p><strong>場所:</strong> <span id="calendar-selected-event-location">-</span></p>
+                    <p id="calendar-selected-event-description">説明がここに表示されます。</p>
+                </div>
             </section>
 
             <section class="card">
-                <h2>コミニティカレンダー</h2>
-                <p class="note">コミニティは別カレンダーで運用します。Google カレンダー上の予定確認とあわせて、下の開催日一覧から参加登録してください。</p>
-                <div id="calendar-learning"></div>
+                <h2>予定を追加</h2>
+                <p id="calendar-login-hint" class="note">ログイン状態を確認中です...</p>
+                <form id="calendar-create-form" class="inline-form calendar-create-form-grid">
+                    <label>タイトル
+                        <input name="title" type="text" placeholder="例: 防災訓練" required>
+                    </label>
+                    <label>開始日時
+                        <input name="start" type="datetime-local" required>
+                    </label>
+                    <label>終了日時
+                        <input name="end" type="datetime-local">
+                    </label>
+                    <label>場所
+                        <input name="location" type="text" placeholder="例: 若松集会所">
+                    </label>
+                    <label class="calendar-create-description">説明
+                        <textarea name="description" placeholder="補足情報"></textarea>
+                    </label>
+                    <label class="checkbox-line">
+                        <input name="allDay" type="checkbox">
+                        終日予定として登録
+                    </label>
+                    <button class="button" type="submit">予定を追加する</button>
+                    <p id="calendar-create-status" class="note" aria-live="polite"></p>
+                </form>
             </section>
 
             <section class="card">
@@ -102,6 +133,7 @@
         </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

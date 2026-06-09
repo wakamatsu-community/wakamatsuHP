@@ -30,13 +30,40 @@
         <main class="section-stack">
             <section class="card admin-login-section">
                 <h1>管理者ログイン（予定）</h1>
-                <p>将来的に Google アカウントによるログイン認証に対応します。現在は準備中です。</p>
-                <button class="button" id="google-signin-btn" type="button" disabled>
-                    Googleでログイン（準備中）
+                <p>Firebase Authentication を使って Google ログインし、個人情報・写真を安全に保存できます。</p>
+                <button class="button" id="google-signin-btn" type="button">
+                    Googleでログイン
+                </button>
+                <button class="button" id="google-signout-btn" type="button" disabled>
+                    ログアウト
                 </button>
                 <p id="login-status" class="note" aria-live="polite">
-                    ログイン機能は未実装です。config.js の <code>integrations.googleLoginReady</code> を <code>true</code> に変更すると有効化されます。
+                    ログイン状態を確認中です。
                 </p>
+            </section>
+
+            <section class="card">
+                <h2>個人情報・写真の保存（Firebase）</h2>
+                <p class="note">Googleログイン後、Firestore に個人情報、Storage に写真を保存します。</p>
+                <form id="admin-member-profile-form" class="inline-form">
+                    <label>氏名
+                        <input name="name" type="text" required>
+                    </label>
+                    <label>電話番号
+                        <input name="phone" type="tel" required>
+                    </label>
+                    <label>組・班
+                        <input name="group" type="text" required>
+                    </label>
+                    <label>メモ
+                        <textarea name="note"></textarea>
+                    </label>
+                    <label>写真ファイル
+                        <input name="photo" type="file" accept="image/*">
+                    </label>
+                    <button class="button" type="submit">Firebaseへ保存</button>
+                    <p id="admin-member-profile-status" class="note" aria-live="polite"></p>
+                </form>
             </section>
 
             <section class="admin-grid">

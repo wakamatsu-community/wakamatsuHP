@@ -1,8 +1,8 @@
 """
 Google カレンダー予定取得スクリプト
-- 本番 (GitHub Actions): 環境変数 GOOGLE_SERVICE_ACCOUNT_KEY (JSON文字列) で認証
-- ローカル開発 : .env の GOOGLE_SERVICE_ACCOUNT_PATH (JSONファイルパス) で認証
-取得結果を docs/events.json に保存 → GitHub Pages で参照可能
+- 本番/ローカル共通: GOOGLE_CALENDAR_API_KEY で公開カレンダーを取得
+- 互換用         : GOOGLE_SERVICE_ACCOUNT_KEY / GOOGLE_SERVICE_ACCOUNT_PATH も利用可能
+取得結果を Docs/events.json に保存 → GitHub Pages で参照可能
 """
 
 import json
@@ -17,19 +17,23 @@ try:
 except ImportError:
     pass  # python-dotenv が未インストールの場合はスキップ
 
-from google.oauth2 import service_account
 from googleapiclient.discovery import build
+
+try:
+    from google.oauth2 import service_account
+except ImportError:
+    service_account = None
 
 # ---------------------------------------------------------------
 # 設定
 # ---------------------------------------------------------------
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
-OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "docs", "events.json")
+OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "Docs", "events.json")
 # 取得する予定の件数上限
 MAX_RESULTS = 50
 
 
-def get_credentials() -> service_account.Credentials:
+def get_credentials():
     """
     認証情報を取得する。
     優先順位:
@@ -38,6 +42,9 @@ def get_credentials() -> service_account.Credentials:
     """
     key_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_KEY")
     if key_json:
+        if service_account is None:
+            print("[ERROR] service_account モジュールを利用できません。", file=sys.stderr)
+            sys.exit(1)
         # 本番: 環境変数に埋め込まれた JSON 文字列から認証
         try:
             info = json.loads(key_json)
@@ -48,6 +55,9 @@ def get_credentials() -> service_account.Credentials:
 
     key_path = os.environ.get("GOOGLE_SERVICE_ACCOUNT_PATH")
     if key_path:
+        if service_account is None:
+            print("[ERROR] service_account モジュールを利用できません。", file=sys.stderr)
+            sys.exit(1)
         # ローカル: .env に書かれたファイルパスから認証
         if not os.path.isfile(key_path):
             print(f"[ERROR] 指定されたサービスアカウントファイルが見つかりません: {key_path}", file=sys.stderr)
@@ -114,8 +124,12 @@ def main() -> None:
         print("[ERROR] 環境変数 GOOGLE_CALENDAR_ID が設定されていません。", file=sys.stderr)
         sys.exit(1)
 
-    credentials = get_credentials()
-    service = build("calendar", "v3", credentials=credentials)
+    api_key = os.environ.get("GOOGLE_CALENDAR_API_KEY", "")
+    if api_key:
+        service = build("calendar", "v3", developerKey=api_key, cache_discovery=False)
+    else:
+        credentials = get_credentials()
+        service = build("calendar", "v3", credentials=credentials)
 
     raw_events = fetch_events(service, calendar_id)
     formatted = [format_event(e) for e in raw_events]

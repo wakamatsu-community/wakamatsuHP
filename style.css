@@ -629,6 +629,10 @@ body {
     .admin-form-grid {
         grid-template-columns: 1fr;
     }
+
+    .calendar-create-form-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 480px) {
@@ -797,6 +801,52 @@ body {
 .learning-event-card .button {
     margin-top: 8px;
     width: 100%;
+}
+
+.calendar-shell {
+    border: 1px solid #d9e2ef;
+    border-radius: 12px;
+    background: #fff;
+    padding: 10px;
+}
+
+#custom-calendar .fc .fc-toolbar-title {
+    font-size: 1.2rem;
+    color: #2f5f4a;
+}
+
+#custom-calendar .fc .fc-button-primary {
+    background: #247246;
+    border-color: #247246;
+}
+
+#custom-calendar .fc .fc-button-primary:hover {
+    background: #1d603b;
+    border-color: #1d603b;
+}
+
+.calendar-selected-event {
+    margin-top: 14px;
+    border-left: 4px solid #247246;
+}
+
+.calendar-create-form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.calendar-create-description {
+    grid-column: 1 / -1;
+}
+
+.checkbox-line {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400 !important;
+}
+
+.checkbox-line input[type="checkbox"] {
+    width: auto;
 }
 
 /* ============================================================

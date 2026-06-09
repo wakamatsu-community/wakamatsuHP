@@ -29,15 +29,16 @@ jobs:
     - name: Run fetch script
       env:
         # 🟢 GitHubシークレットをプログラムの環境変数に自動注入します
-        GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
-        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+        GOOGLE_CALENDAR_API_KEY: ${{ secrets['GOOGLE_CALENDAR_API_KEY'] }}
+        GOOGLE_CALENDAR_ID: ${{ secrets['GOOGLE_CALENDAR_ID'] }}
+        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets['GOOGLE_SERVICE_ACCOUNT_KEY'] }}
       run: python fetch_calendar.py
 
     - name: Commit and Push changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add docs/events.json
+        git add Docs/events.json
         # 変更がある場合のみコミットしてプッシュする（無限ループ防止）
         git diff --cached --quiet || (git commit -m "Automated Calendar Update [skip ci]" && git push)
 

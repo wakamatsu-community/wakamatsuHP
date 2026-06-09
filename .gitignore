@@ -4,6 +4,11 @@
 
 # ローカル環境変数ファイル
 .env
+.env.local
+.env.*.local
+
+# ビルド成果物
+dist/
 
 # サービスアカウント JSON キーが置かれるディレクトリ
 secrets/
