@@ -57,7 +57,7 @@ body {
 .logo {
     font-size: 1.4rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: #0066cc;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -380,6 +380,10 @@ body {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 10px;
+}
+
+.site-footer-links {
+    margin-bottom: 10px;
 }
 
 .admin-form-grid {
@@ -767,6 +771,55 @@ body {
     padding: 8px;
 }
 
+.photo-item {
+    background: #f8fafc;
+    border: 1px solid #e4ebf5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.photo-thumb {
+    display: block;
+    aspect-ratio: 4 / 3;
+    background: #edf3fb;
+}
+
+.photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-title {
+    margin: 8px 10px 4px;
+    font-size: 0.86rem;
+    color: var(--text-color);
+    word-break: break-word;
+}
+
+.photo-comment {
+    margin: 0 10px 6px;
+    font-size: 0.8rem;
+    color: var(--sub-text);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.photo-actions {
+    margin: 0 10px 10px;
+    font-size: 0.82rem;
+}
+
+.photo-actions a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.photo-actions a:hover {
+    text-decoration: underline;
+}
+
 /* ============================================================
    地域マップ スポット（カテゴリ別）
    ============================================================ */
@@ -1023,6 +1076,113 @@ body {
     padding: 10px 12px;
     font-size: 0.92rem;
     color: #9a2e2e;
+}
+
+.opinion-hero {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(247, 238, 225, 0.9) 100%);
+}
+
+.opinion-form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.opinion-content-field {
+    grid-column: 1 / -1;
+}
+
+.opinion-entry-list,
+.admin-opinion-list {
+    display: grid;
+    gap: 14px;
+}
+
+.opinion-entry-card {
+    border-left: 4px solid var(--accent-color);
+}
+
+.opinion-entry-meta,
+.opinion-admin-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: #eef5ff;
+    color: #315f8d;
+}
+
+.status-badge[data-status="検討中"] {
+    background: #eef5ff;
+    color: #315f8d;
+}
+
+.status-badge[data-status="対応中"] {
+    background: #fff1df;
+    color: #a55b08;
+}
+
+.status-badge[data-status="保留"] {
+    background: #fde7e7;
+    color: #a63d3d;
+}
+
+.opinion-admin-card {
+    border-left: 4px solid #5e9be8;
+}
+
+.opinion-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.opinion-admin-actions .button,
+.opinion-admin-actions .button-link {
+    margin-top: 0;
+}
+
+.opinion-admin-form {
+    display: grid;
+    gap: 10px;
+}
+
+.opinion-admin-form label {
+    display: grid;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.opinion-admin-form input,
+.opinion-admin-form select,
+.opinion-admin-form textarea {
+    width: 100%;
+    border: 1px solid #d2dbe7;
+    border-radius: 10px;
+    padding: 10px;
+    font: inherit;
+    background: #fff;
+}
+
+.opinion-admin-form textarea {
+    min-height: 88px;
+    resize: vertical;
+}
+
+.opinion-reason-field {
+    display: none;
+}
+
+.opinion-reason-field.visible {
+    display: grid;
 }
 
 .table-scroll {

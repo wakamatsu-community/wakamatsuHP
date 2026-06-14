@@ -6,6 +6,7 @@ import { initFormsPage } from "./form.js";
 import { initGalleryPage } from "./gallery.js";
 import { initEquipmentPage, initAdminReturnAlerts } from "./equipment.js";
 import { initManagedEventsPage, initAdminCommunityForms, loadAllManagedEvents } from "./community-admin.js";
+import { initOpinionExchangePage, initAdminOpinionExchange } from "./opinion-exchange.js";
 import { initFirebaseAdminSection } from "./firebase-admin.js";
 
 function setupNavigation() {
@@ -195,9 +196,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         initGalleryPage(SITE_CONFIG);
     }
 
+    if (page === "opinion") {
+        initOpinionExchangePage(SITE_CONFIG);
+    }
+
     if (page === "admin") {
         await initAdminReturnAlerts(SITE_CONFIG);
         initAdminCommunityForms(SITE_CONFIG);
+        initAdminOpinionExchange(SITE_CONFIG);
         initAdminCalendarForm();
         initFirebaseAdminSection();
     }

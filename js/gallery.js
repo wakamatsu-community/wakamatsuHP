@@ -1,52 +1,168 @@
 /**
  * 写真アルバム表示モジュール
  *
- * 将来は Google Drive API (files.list) でフォルダ内の画像一覧を取得します。
- * 現時点は config.js の mockPhotos を使用します。
- *
- * Drive API 連携時の置き換え先: getDrivePhotos() 関数
+ * 表示元は Google Drive フォルダを正とし、
+ * listPhotosEndpoint が未設定の場合のみ mockPhotos を使用します。
  */
 
-/**
- * サムネイル用のプレースホルダーグリッドを生成します。
- */
+function createDriveFileUrls(file) {
+    const fileId = file.id || "";
+    return {
+        viewUrl: file.viewUrl || file.webViewLink || (fileId ? `https://drive.google.com/file/d/${fileId}/view` : "#"),
+        downloadUrl: file.downloadUrl || file.webContentLink || (fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : "#"),
+        thumbnailUrl: file.thumbnailUrl || file.thumbnailLink || ""
+    };
+}
+
+function normalizeDriveFiles(data) {
+    const rawFiles = Array.isArray(data) ? data : (Array.isArray(data?.files) ? data.files : []);
+    return rawFiles
+        .map((file) => {
+            const name = String(file?.name || file?.title || "").trim();
+            if (!name) {
+                return null;
+            }
+            const urls = createDriveFileUrls(file);
+            return {
+                id: String(file?.id || ""),
+                title: name,
+                comment: String(file?.comment || file?.description || file?.metadataComment || "").trim(),
+                viewUrl: urls.viewUrl,
+                downloadUrl: urls.downloadUrl,
+                thumbnailUrl: urls.thumbnailUrl
+            };
+        })
+        .filter(Boolean);
+}
+
+function isConfiguredFolderId(folderId) {
+    return Boolean(folderId && !String(folderId).includes("sample-"));
+}
+
+function toDriveFolderUrl(folderId) {
+    return isConfiguredFolderId(folderId) ? `https://drive.google.com/drive/folders/${folderId}` : "";
+}
+
+async function getDrivePhotos(config, folderId) {
+    const endpoint = config?.gallery?.drive?.listPhotosEndpoint;
+    if (!isConfigured(endpoint) || !folderId) {
+        return null;
+    }
+
+    try {
+        const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "listPhotos",
+                folderId
+            })
+        });
+        if (!res.ok) {
+            return [];
+        }
+        const data = await res.json();
+        return normalizeDriveFiles(data);
+    } catch {
+        return [];
+    }
+}
+
 function createPhotoGrid(photos) {
     const grid = document.createElement("div");
     grid.className = "photo-grid";
 
+    if (!photos || photos.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "note";
+        empty.textContent = "このフォルダに写真はまだありません。";
+        grid.appendChild(empty);
+        return grid;
+    }
+
     photos.forEach((photo) => {
-        const item = document.createElement("div");
-        item.className = "photo-placeholder";
-        item.textContent = photo.title;
-        item.setAttribute("aria-label", photo.title);
-        grid.appendChild(item);
+        if (photo.thumbnailUrl) {
+            const item = document.createElement("article");
+            item.className = "photo-item";
+
+            const link = document.createElement("a");
+            link.href = photo.viewUrl || "#";
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.className = "photo-thumb";
+
+            const img = document.createElement("img");
+            img.src = photo.thumbnailUrl;
+            img.alt = photo.title;
+            img.loading = "lazy";
+            link.appendChild(img);
+
+            const caption = document.createElement("p");
+            caption.className = "photo-title";
+            caption.textContent = photo.title;
+
+            if (photo.comment) {
+                const memo = document.createElement("p");
+                memo.className = "photo-comment";
+                memo.textContent = photo.comment;
+                item.append(link, caption, memo);
+            } else {
+                item.append(link, caption);
+            }
+
+            const actions = document.createElement("p");
+            actions.className = "photo-actions";
+
+            const view = document.createElement("a");
+            view.href = photo.viewUrl || "#";
+            view.target = "_blank";
+            view.rel = "noopener noreferrer";
+            view.textContent = "表示";
+
+            const sep = document.createElement("span");
+            sep.textContent = " / ";
+
+            const dl = document.createElement("a");
+            dl.href = photo.downloadUrl || photo.viewUrl || "#";
+            dl.target = "_blank";
+            dl.rel = "noopener noreferrer";
+            dl.textContent = "ダウンロード";
+
+            actions.append(view, sep, dl);
+            item.append(actions);
+            grid.appendChild(item);
+            return;
+        }
+
+        const placeholder = document.createElement("div");
+        placeholder.className = "photo-placeholder";
+        placeholder.textContent = photo.title;
+        placeholder.setAttribute("aria-label", photo.title);
+        grid.appendChild(placeholder);
     });
 
     return grid;
 }
 
-/**
- * アルバムカードを生成します。
- */
-function createAlbumCard(album) {
+function createAlbumCard(album, photos, sourceLabel) {
     const article = document.createElement("article");
     article.className = "card gallery-album";
     article.dataset.albumTitle = (album.title || "").toLowerCase();
     article.dataset.searchText = [
         album.title || "",
         album.description || "",
-        ...(album.mockPhotos || []).map((photo) => photo.title || "")
+        ...(photos || []).map((photo) => `${photo.title || ""} ${photo.comment || ""}`)
     ].join(" ").toLowerCase();
 
     const header = document.createElement("div");
     header.className = "album-header";
 
     const heading = document.createElement("h2");
-    heading.textContent = `${album.coverEmoji} ${album.title}`;
+    heading.textContent = `${album.coverEmoji || "📷"} ${album.title}`;
 
     const meta = document.createElement("p");
     meta.className = "note";
-    meta.textContent = `${album.year}年 ・ ${album.mockPhotos.length}件`;
+    meta.textContent = `${album.year}年 ・ ${photos.length}件 ・ ${sourceLabel}`;
 
     header.append(heading, meta);
 
@@ -54,16 +170,24 @@ function createAlbumCard(album) {
     desc.textContent = album.description;
     desc.style.margin = "10px 0 14px";
 
-    const photoGrid = createPhotoGrid(album.mockPhotos);
+    const photoGrid = createPhotoGrid(photos);
 
-    const driveLink = document.createElement("a");
-    driveLink.className = "button-link";
-    driveLink.href = `https://drive.google.com/drive/folders/${album.driveFolderId}`;
-    driveLink.target = "_blank";
-    driveLink.rel = "noopener noreferrer";
-    driveLink.textContent = "Google Drive で見る";
+    const folderUrl = toDriveFolderUrl(album.driveFolderId);
+    if (folderUrl) {
+        const driveLink = document.createElement("a");
+        driveLink.className = "button-link";
+        driveLink.href = folderUrl;
+        driveLink.target = "_blank";
+        driveLink.rel = "noopener noreferrer";
+        driveLink.textContent = "フォルダを開く";
+        article.append(header, desc, photoGrid, driveLink);
+    } else {
+        const driveDisabled = document.createElement("p");
+        driveDisabled.className = "note";
+        driveDisabled.textContent = "フォルダID未設定のためリンクを表示できません。config.js の driveFolderId を実フォルダIDへ更新してください。";
+        article.append(header, desc, photoGrid, driveDisabled);
+    }
 
-    article.append(header, desc, photoGrid, driveLink);
     return article;
 }
 
@@ -124,7 +248,7 @@ async function uploadPhotosToDrive(config, payload) {
     }
 }
 
-function bindGalleryUploadForm(config) {
+function bindGalleryUploadForm(config, onUploaded) {
     const form = document.getElementById("gallery-upload-form");
     const destinationSelect = document.getElementById("gallery-destination");
     const newFolderWrap = document.getElementById("new-folder-wrap");
@@ -199,7 +323,36 @@ function bindGalleryUploadForm(config) {
         form.reset();
         newFolderWrap.classList.add("hidden");
         newFolderInput.required = false;
+        if (typeof onUploaded === "function") {
+            await onUploaded();
+        }
     });
+}
+
+async function buildAlbumsForRender(config, albums) {
+    const results = await Promise.all(albums.map(async (album) => {
+        const drivePhotos = await getDrivePhotos(config, album.driveFolderId);
+        if (drivePhotos !== null) {
+            return {
+                album,
+                photos: drivePhotos,
+                sourceLabel: "Drive"
+            };
+        }
+
+        return {
+            album,
+            photos: (album.mockPhotos || []).map((photo) => ({
+                title: photo.title || "",
+                viewUrl: "",
+                downloadUrl: "",
+                thumbnailUrl: ""
+            })),
+            sourceLabel: "モック"
+        };
+    }));
+
+    return results;
 }
 
 /**
@@ -214,26 +367,7 @@ export function initGalleryPage(config) {
     const searchInput = document.getElementById("gallery-search");
     const emptyState = document.getElementById("gallery-empty");
 
-    if (albums.length === 0) {
-        container.innerHTML = "<section class='card'><p>アルバムは準備中です。</p></section>";
-        bindGalleryUploadForm(config);
-        return;
-    }
-
-    if (albumFilter) {
-        albums.forEach((album) => {
-            const option = document.createElement("option");
-            option.value = album.title;
-            option.textContent = album.title;
-            albumFilter.appendChild(option);
-        });
-    }
-
-    const cards = albums.map((album) => {
-        const card = createAlbumCard(album);
-        container.appendChild(card);
-        return card;
-    });
+    let cards = [];
 
     const applyFilters = () => {
         const selectedAlbum = albumFilter?.value || "all";
@@ -257,8 +391,39 @@ export function initGalleryPage(config) {
         }
     };
 
+    const renderAlbums = async () => {
+        if (albums.length === 0) {
+            container.innerHTML = "<section class='card'><p>アルバムは準備中です。</p></section>";
+            cards = [];
+            applyFilters();
+            return;
+        }
+
+        if (albumFilter) {
+            const selected = albumFilter.value || "all";
+            albumFilter.innerHTML = "<option value='all'>すべてのアルバム</option>";
+            albums.forEach((album) => {
+                const option = document.createElement("option");
+                option.value = album.title;
+                option.textContent = album.title;
+                albumFilter.appendChild(option);
+            });
+            albumFilter.value = selected;
+        }
+
+        container.innerHTML = "";
+        const albumData = await buildAlbumsForRender(config, albums);
+        cards = albumData.map(({ album, photos, sourceLabel }) => {
+            const card = createAlbumCard(album, photos, sourceLabel);
+            container.appendChild(card);
+            return card;
+        });
+
+        applyFilters();
+    };
+
     albumFilter?.addEventListener("change", applyFilters);
     searchInput?.addEventListener("input", applyFilters);
-    applyFilters();
-    bindGalleryUploadForm(config);
+    bindGalleryUploadForm(config, renderAlbums);
+    renderAlbums();
 }

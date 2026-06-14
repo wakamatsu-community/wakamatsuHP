@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>意見交換ページ | 福山市若松町内会コミュニケーションボード</title>
+    <meta name="description" content="若松町内会の意見交換ページ。冠婚葬祭や困りごと、地域の相談を共有できます。">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="opinion">
+    <div class="container">
+        <header class="site-header">
+            <div class="logo"><span>🌲</span> 若松町内会</div>
+            <button class="menu-toggle" type="button" aria-label="メニューを開く">☰</button>
+            <nav class="global-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="events.html" class="nav-link">行事予定</a></li>
+                    <li><a href="equipment.html" class="nav-link">備品予約</a></li>
+                    <li><a href="map.html" class="nav-link">地域マップ</a></li>
+                    <li><a href="disaster.html" class="nav-link">防災情報</a></li>
+                    <li><a href="documents.html" class="nav-link">回覧板・資料室</a></li>
+                    <li><a href="gallery.html" class="nav-link">写真アルバム</a></li>
+                    <li><a href="opinion.html" class="nav-link">意見交換</a></li>
+                    <li><a href="admin.html" class="nav-link">管理ページ</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="section-stack">
+            <section class="card hero opinion-hero">
+                <div class="hero-body">
+                    <p class="eyebrow hero-pill">COMMUNITY OPINION EXCHANGE</p>
+                    <h1>意見交換・相談ページ</h1>
+                    <p>冠婚葬祭の連絡、困りごと、落とし物、側溝やごみの相談など、地域の気づきを共有するためのページです。</p>
+                    <p class="note">入力例: 「○○の側溝にゴミが放置されています」「○○を探しています」</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>意見を投稿する</h2>
+                <p class="note">名前は任意です。内容は町内会で確認し、管理者が検討中・対応中・保留のいずれかで返答します。</p>
+                <form id="opinion-form" class="inline-form opinion-form-grid">
+                    <label>名前（任意）
+                        <input name="name" type="text" placeholder="例: 山田花子">
+                    </label>
+                    <label>情報
+                        <select name="category" required>
+                            <option value="">選択してください</option>
+                            <option value="冠婚葬祭">冠婚葬祭</option>
+                            <option value="困りごと">困りごと</option>
+                            <option value="落とし物・探し物">落とし物・探し物</option>
+                            <option value="清掃・ごみ">清掃・ごみ</option>
+                            <option value="連絡事項">連絡事項</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </label>
+                    <label class="opinion-content-field">情報の内容
+                        <textarea name="content" placeholder="例: ○○の側溝にゴミが放置されています。対応をお願いします。" required></textarea>
+                    </label>
+                    <label class="checkbox-line">
+                        <input name="answered" type="checkbox">
+                        回答の有無
+                    </label>
+                    <button class="button" type="submit">投稿する</button>
+                    <p id="opinion-status" class="note" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>最近の投稿</h2>
+                <div id="opinion-entry-list" class="opinion-entry-list"></div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p><a class="button-link" href="admin.html#admin-opinion-exchange-section">管理者確認はこちら</a></p>
+            <p>&copy; 2026 福山市若松町内会コミュニケーションボード</p>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

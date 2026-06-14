@@ -219,52 +219,46 @@ export const SITE_CONFIG = {
         drive: {
             rootFolderId: "sample-gallery-root-folder-id",
             createFolderEndpoint: "https://script.google.com/macros/s/sample-gallery-folder-script-id/exec",
+            listPhotosEndpoint: "https://script.google.com/macros/s/sample-gallery-list-script-id/exec",
             uploadEndpoint: "https://script.google.com/macros/s/sample-gallery-upload-script-id/exec"
         },
         destinations: [
-            { id: "album-summer", label: "夏祭りフォルダ", folderId: "sample-summer-folder-id" },
-            { id: "album-disaster", label: "防災訓練フォルダ", folderId: "sample-disaster-folder-id" },
-            { id: "album-cleanup", label: "清掃活動フォルダ", folderId: "sample-cleanup-folder-id" }
+            { id: "community-rose", label: "コミュニティ_バラ園管理", folderId: "sample-community-rose-folder-id" },
+            { id: "community-general", label: "コミュニティ_区分なし", folderId: "sample-community-general-folder-id" },
+            { id: "archive", label: "アーカイブ", folderId: "sample-archive-folder-id" }
         ],
         albums: [
             {
-                title: "夏祭り",
-                year: "2025",
-                coverEmoji: "🎆",
-                description: "令和7年度 若松町内会夏祭りの様子です。",
-                driveFolderId: "sample-summer-folder-id",
+                title: "バラ園管理",
+                year: "2026",
+                coverEmoji: "🌹",
+                description: "コミュニティ活動（バラ園管理）の記録です。",
+                driveFolderId: "sample-community-rose-folder-id",
                 mockPhotos: [
-                    { title: "開会式" },
-                    { title: "盆踊り" },
-                    { title: "屋台コーナー" },
-                    { title: "子ども神輿" },
-                    { title: "花火" },
-                    { title: "閉会式" }
+                    { title: "花壇整備" },
+                    { title: "剪定作業" },
+                    { title: "水やり" }
                 ]
             },
             {
-                title: "防災訓練",
-                year: "2025",
-                coverEmoji: "⛑️",
-                description: "令和7年度 町内防災訓練の記録です。",
-                driveFolderId: "sample-disaster-folder-id",
+                title: "区分なし",
+                year: "2026",
+                coverEmoji: "📷",
+                description: "コミュニティ活動（区分なし）の写真です。",
+                driveFolderId: "sample-community-general-folder-id",
                 mockPhotos: [
-                    { title: "消火訓練" },
-                    { title: "避難誘導" },
-                    { title: "AED体験" },
-                    { title: "防災グッズ展示" }
+                    { title: "活動風景1" },
+                    { title: "活動風景2" }
                 ]
             },
             {
-                title: "清掃活動",
-                year: "2025",
-                coverEmoji: "🧹",
-                description: "地域一斉清掃活動の様子です。",
-                driveFolderId: "sample-cleanup-folder-id",
+                title: "アーカイブ",
+                year: "2026",
+                coverEmoji: "🗂️",
+                description: "過去写真の保管用アルバムです。",
+                driveFolderId: "sample-archive-folder-id",
                 mockPhotos: [
-                    { title: "町内清掃" },
-                    { title: "公園整備" },
-                    { title: "側溝清掃" }
+                    { title: "過去活動記録" }
                 ]
             }
         ]
