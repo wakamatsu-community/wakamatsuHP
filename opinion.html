@@ -40,7 +40,7 @@
 
             <section class="card">
                 <h2>意見を投稿する</h2>
-                <p class="note">名前は任意です。内容は町内会で確認し、管理者が検討中・対応中・保留のいずれかで返答します。</p>
+                <p class="note">名前は任意です。投稿後は「未確認」で表示され、管理者確認後に「検討中・対応中・解消・その他」と事由が表示されます。</p>
                 <form id="opinion-form" class="inline-form opinion-form-grid">
                     <label>名前（任意）
                         <input name="name" type="text" placeholder="例: 山田花子">
@@ -58,10 +58,6 @@
                     </label>
                     <label class="opinion-content-field">情報の内容
                         <textarea name="content" placeholder="例: ○○の側溝にゴミが放置されています。対応をお願いします。" required></textarea>
-                    </label>
-                    <label class="checkbox-line">
-                        <input name="answered" type="checkbox">
-                        回答の有無
                     </label>
                     <button class="button" type="submit">投稿する</button>
                     <p id="opinion-status" class="note" aria-live="polite"></p>

@@ -1124,14 +1124,24 @@ body {
     color: #315f8d;
 }
 
+.status-badge[data-status="未確認"] {
+    background: #f2f4f7;
+    color: #526071;
+}
+
 .status-badge[data-status="対応中"] {
     background: #fff1df;
     color: #a55b08;
 }
 
-.status-badge[data-status="保留"] {
-    background: #fde7e7;
-    color: #a63d3d;
+.status-badge[data-status="解消"] {
+    background: #e7f8ea;
+    color: #256b36;
+}
+
+.status-badge[data-status="その他"] {
+    background: #f7ebff;
+    color: #70439a;
 }
 
 .opinion-admin-card {

@@ -1,4 +1,6 @@
 const OPINION_STORE_KEY = "wakamatsu_opinion_exchange_v1";
+const OPINION_STATUS_UNCONFIRMED = "未確認";
+const OPINION_STATUS_OPTIONS = ["検討中", "対応中", "解消", "その他"];
 
 const DEFAULT_OPINIONS = [
     {
@@ -7,8 +9,8 @@ const DEFAULT_OPINIONS = [
         category: "清掃・ごみ",
         content: "○○の側溝にごみが放置されています。雨の前に確認できると助かります。",
         answered: false,
-        status: "検討中",
-        reason: "現地確認を予定しています。",
+        status: OPINION_STATUS_UNCONFIRMED,
+        reason: "",
         createdAt: "2026-06-10T09:00:00.000Z",
         updatedAt: "2026-06-10T09:00:00.000Z"
     },
@@ -25,18 +27,42 @@ const DEFAULT_OPINIONS = [
     }
 ];
 
+function normalizeOpinionStatus(value) {
+    const raw = String(value || "").trim();
+    if (raw === "保留") {
+        return "その他";
+    }
+    if (raw === OPINION_STATUS_UNCONFIRMED || OPINION_STATUS_OPTIONS.includes(raw)) {
+        return raw;
+    }
+    return OPINION_STATUS_UNCONFIRMED;
+}
+
+function normalizeOpinion(opinion) {
+    const status = normalizeOpinionStatus(opinion?.status);
+    return {
+        ...opinion,
+        status,
+        answered: Boolean(opinion?.answered),
+        reason: status === OPINION_STATUS_UNCONFIRMED ? "" : String(opinion?.reason || "").trim()
+    };
+}
+
 function loadLocalOpinions() {
     const saved = localStorage.getItem(OPINION_STORE_KEY);
     if (saved) {
         try {
-            return JSON.parse(saved);
+            const parsed = JSON.parse(saved);
+            const normalized = Array.isArray(parsed) ? parsed.map(normalizeOpinion) : [];
+            saveLocalOpinions(normalized);
+            return normalized;
         } catch {
             localStorage.removeItem(OPINION_STORE_KEY);
         }
     }
 
     localStorage.setItem(OPINION_STORE_KEY, JSON.stringify(DEFAULT_OPINIONS));
-    return [...DEFAULT_OPINIONS];
+    return [...DEFAULT_OPINIONS].map(normalizeOpinion);
 }
 
 function saveLocalOpinions(opinions) {
@@ -62,9 +88,10 @@ function escapeHtml(value) {
 }
 
 function getOpinionStatusText(opinion) {
-    const status = opinion?.status || "検討中";
-    if ((status === "対応中" || status === "保留") && opinion?.reason) {
-        return `${status} - ${opinion.reason}`;
+    const status = normalizeOpinionStatus(opinion?.status);
+    const reason = String(opinion?.reason || "").trim();
+    if (status !== OPINION_STATUS_UNCONFIRMED && reason) {
+        return `${status} - ${reason}`;
     }
     return status;
 }
@@ -87,15 +114,16 @@ function renderOpinionEntries(listEl, opinions) {
     recent.forEach((opinion) => {
         const card = document.createElement("article");
         card.className = "card opinion-entry-card";
+        const currentStatus = normalizeOpinionStatus(opinion.status);
         card.innerHTML = `
             <div class="opinion-entry-meta">
-                <span class="status-badge" data-status="${escapeHtml(opinion.status || "検討中")}">${escapeHtml(opinion.status || "検討中")}</span>
+                <span class="status-badge" data-status="${escapeHtml(currentStatus)}">${escapeHtml(currentStatus)}</span>
                 <span class="note">${escapeHtml(opinion.category || "未分類")}</span>
                 <span class="note">${formatDate(opinion.updatedAt || opinion.createdAt)}</span>
             </div>
             <h3>${escapeHtml(opinion.content)}</h3>
             <p><strong>名前:</strong> ${escapeHtml(opinion.name || "匿名")}</p>
-            <p><strong>回答の有無:</strong> ${opinion.answered ? "あり" : "なし"}</p>
+            ${opinion.answered ? '<p><strong>回答の有無:</strong> あり</p>' : ""}
             <p><strong>管理者の返答:</strong> ${escapeHtml(getOpinionStatusText(opinion))}</p>
         `;
         listEl.appendChild(card);
@@ -109,8 +137,8 @@ function createOpinionRecord(form) {
         name: String(fd.get("name") || "").trim(),
         category: String(fd.get("category") || "").trim(),
         content: String(fd.get("content") || "").trim(),
-        answered: fd.get("answered") === "on",
-        status: "検討中",
+        answered: false,
+        status: OPINION_STATUS_UNCONFIRMED,
         reason: "",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -166,26 +194,29 @@ function renderAdminOpinionCards(root, opinions) {
         const card = document.createElement("article");
         card.className = "card opinion-admin-card";
         card.dataset.opinionId = opinion.id;
+        const currentStatus = normalizeOpinionStatus(opinion.status);
         card.innerHTML = `
             <div class="opinion-admin-meta">
-                <span class="status-badge" data-status="${escapeHtml(opinion.status || "検討中")}">${escapeHtml(opinion.status || "検討中")}</span>
+                <span class="status-badge" data-status="${escapeHtml(currentStatus)}">${escapeHtml(currentStatus)}</span>
                 <span class="note">${escapeHtml(opinion.category || "未分類")}</span>
                 <span class="note">${formatDate(opinion.updatedAt || opinion.createdAt)}</span>
             </div>
             <h3>${escapeHtml(opinion.content)}</h3>
             <p><strong>名前:</strong> ${escapeHtml(opinion.name || "匿名")}</p>
-            <p><strong>回答の有無:</strong> ${opinion.answered ? "あり" : "なし"}</p>
+            ${opinion.answered ? '<p><strong>回答の有無:</strong> あり</p>' : ""}
             <form class="opinion-admin-form">
                 <label>確認と返答
                     <select name="status">
+                        <option value="未確認">未確認</option>
                         <option value="検討中">検討中</option>
                         <option value="対応中">対応中</option>
-                        <option value="保留">保留</option>
+                        <option value="解消">解消</option>
+                        <option value="その他">その他</option>
                     </select>
                 </label>
                 <label class="opinion-reason-field">
                     事由
-                    <textarea name="reason" placeholder="対応中・保留の理由を入力"></textarea>
+                    <textarea name="reason" placeholder="管理者の対応内容や事由を入力"></textarea>
                 </label>
                 <label class="checkbox-line">
                     <input name="answered" type="checkbox">
@@ -206,7 +237,7 @@ function renderAdminOpinionCards(root, opinions) {
         const adminStatus = card.querySelector('[data-role="admin-status"]');
 
         if (select instanceof HTMLSelectElement) {
-            select.value = opinion.status || "検討中";
+            select.value = normalizeOpinionStatus(opinion.status);
         }
         if (reasonInput instanceof HTMLTextAreaElement) {
             reasonInput.value = opinion.reason || "";
@@ -216,7 +247,7 @@ function renderAdminOpinionCards(root, opinions) {
         }
 
         const updateReasonVisibility = () => {
-            const shouldShow = select instanceof HTMLSelectElement && (select.value === "対応中" || select.value === "保留");
+            const shouldShow = select instanceof HTMLSelectElement && select.value !== OPINION_STATUS_UNCONFIRMED;
             reasonField?.classList.toggle("visible", shouldShow);
             if (reasonInput instanceof HTMLTextAreaElement) {
                 reasonInput.required = shouldShow;
@@ -239,11 +270,11 @@ function renderAdminOpinionCards(root, opinions) {
                 return;
             }
 
-            const nextStatus = String(select?.value || "検討中");
+            const nextStatus = normalizeOpinionStatus(select?.value);
             const nextReason = String(reasonInput?.value || "").trim();
-            if ((nextStatus === "対応中" || nextStatus === "保留") && !nextReason) {
+            if (nextStatus !== OPINION_STATUS_UNCONFIRMED && !nextReason) {
                 if (adminStatus) {
-                    adminStatus.textContent = "対応中・保留には事由を入力してください。";
+                    adminStatus.textContent = "未確認以外を選ぶ場合は事由を入力してください。";
                 }
                 return;
             }
@@ -251,7 +282,7 @@ function renderAdminOpinionCards(root, opinions) {
             currentOpinions[index] = {
                 ...currentOpinions[index],
                 status: nextStatus,
-                reason: nextStatus === "検討中" ? "" : nextReason,
+                reason: nextStatus === OPINION_STATUS_UNCONFIRMED ? "" : nextReason,
                 answered: Boolean(answeredInput?.checked),
                 updatedAt: new Date().toISOString()
             };

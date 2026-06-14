@@ -159,7 +159,7 @@ function createManagedEventCard(event) {
         link.href = event.recruitFormUrl;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.textContent = "参加募集フォーム";
+        link.textContent = "参加登録フォーム";
         card.appendChild(link);
     }
 
@@ -619,15 +619,41 @@ function openRecruitFormForEvent(events, eventId) {
     }
 }
 
-function renderLearningSelectedEvent(event, events) {
+async function submitLearningAttendance(config, event, result, statusEl) {
+    if (!event?.id) {
+        if (statusEl) {
+            statusEl.textContent = "対象イベントが選択されていません。";
+        }
+        return;
+    }
+
+    const payload = {
+        type: "eventAttendance",
+        eventId: event.id,
+        result,
+        source: "eventPageTap",
+        createdAt: new Date().toISOString()
+    };
+
+    const ok = await postToEndpoint(config?.calendar?.management?.attendanceSubmitEndpoint, payload);
+    if (statusEl) {
+        statusEl.textContent = ok
+            ? `「${result === "attend" ? "参加" : "不参加"}」を記録しました。`
+            : `「${result === "attend" ? "参加" : "不参加"}」を記録しました（Apps Script未設定のためローカル処理）。`;
+    }
+}
+
+function renderLearningSelectedEvent(event, events, config) {
     const title = document.getElementById("learning-selected-event-title");
     const datetime = document.getElementById("learning-selected-event-datetime");
     const place = document.getElementById("learning-selected-event-place");
     const capacity = document.getElementById("learning-selected-event-capacity");
     const description = document.getElementById("learning-selected-event-description");
-    const joinButton = document.getElementById("learning-selected-event-join");
+    const attendButton = document.getElementById("learning-selected-event-attend");
+    const declineButton = document.getElementById("learning-selected-event-decline");
+    const responseStatus = document.getElementById("learning-selected-event-response-status");
 
-    if (!(title && datetime && place && capacity && description && joinButton)) {
+    if (!(title && datetime && place && capacity && description && attendButton && declineButton && responseStatus)) {
         return;
     }
 
@@ -637,7 +663,11 @@ function renderLearningSelectedEvent(event, events) {
         place.textContent = "-";
         capacity.textContent = "-";
         description.textContent = "説明がここに表示されます。";
-        joinButton.disabled = true;
+        responseStatus.textContent = "";
+        attendButton.disabled = true;
+        declineButton.disabled = true;
+        attendButton.onclick = null;
+        declineButton.onclick = null;
         return;
     }
 
@@ -648,13 +678,18 @@ function renderLearningSelectedEvent(event, events) {
         ? `${event.minParticipants}〜${event.maxParticipants || ""}名`
         : "制限なし";
     description.textContent = event.description || "説明なし";
-    joinButton.disabled = false;
-    joinButton.onclick = () => {
-        openRecruitFormForEvent(events, event.id);
+    responseStatus.textContent = "参加・不参加を選んで記録してください。";
+    attendButton.disabled = false;
+    declineButton.disabled = false;
+    attendButton.onclick = async () => {
+        await submitLearningAttendance(config, event, "attend", responseStatus);
+    };
+    declineButton.onclick = async () => {
+        await submitLearningAttendance(config, event, "decline", responseStatus);
     };
 }
 
-function renderLearningCalendar(events) {
+function renderLearningCalendar(events, config) {
     const root = document.getElementById("learning-calendar");
     const status = document.getElementById("learning-calendar-status");
     if (!(root && status)) {
@@ -688,7 +723,7 @@ function renderLearningCalendar(events) {
         eventClick: (info) => {
             const sourceEventId = info.event.extendedProps?.sourceEventId || info.event.id;
             const selected = events.find((item) => item.id === sourceEventId);
-            renderLearningSelectedEvent(selected, events);
+            renderLearningSelectedEvent(selected, events, config);
         },
         dateClick: (info) => {
             openCommunityCreateModal({ start: info.date, end: "" });
@@ -764,7 +799,7 @@ async function handleEventFormSubmit(form, statusEl, type, config) {
         description: String(fd.get("description") || "").trim()
     };
 
-    if (!event.title || !event.category || !event.scheduleLabel || !event.place || !event.recruitFormUrl) {
+    if (!event.title || !event.category || !event.scheduleLabel || !event.place) {
         statusEl.textContent = "必須項目を入力してください。";
         return;
     }
@@ -923,27 +958,17 @@ export async function initManagedEventsPage(config) {
 
     const loadedEvents = await loadManagedEvents(config);
     const displayEvents = loadedEvents.filter((event) => isLearningEvent(event) && event.type === "special");
-    const recruitSelect = document.getElementById("recruit-event-id");
+    renderLearningSelectedEvent(null, displayEvents, config);
 
-    if (recruitSelect) {
-        populateEventSelect(recruitSelect, displayEvents);
-    }
-    renderLearningSelectedEvent(null, displayEvents);
-
-    bindRecruitForm(config, displayEvents);
-    bindRecruitModalActions();
-    const learningCalendar = renderLearningCalendar(displayEvents);
+    const learningCalendar = renderLearningCalendar(displayEvents, config);
     bindCommunityCreateModal(config, displayEvents, (newEvent) => {
-        if (recruitSelect) {
-            populateEventSelect(recruitSelect, displayEvents);
-        }
         if (learningCalendar) {
             const parsed = parseScheduleLabelToCalendarEvent(newEvent);
             if (parsed) {
                 learningCalendar.addEvent(parsed);
             }
         }
-        renderLearningSelectedEvent(newEvent, displayEvents);
+        renderLearningSelectedEvent(newEvent, displayEvents, config);
     });
 }
 
